@@ -24,8 +24,23 @@ using SupEll = std::array<double,8>;
 
 double getsuperval (const double x, const SupEll& c) {
   //std::cout << "se is " << c[0] << " " << c[1] << " " << c[2] << " " << c[3] << " " << c[4] << " " << c[5] << " " << c[6] << " " << c[7] << std::endl;
-  std::cout << "comps are " << ((x+c[2])/c[3]) << " " << c[4] << std::endl;
-  return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x-c[2])/c[3], c[4]), 1./c[7]);	// nan
+  // (x/l + C3)/C4
+  double innerB = (x-c[2])/c[3];
+  if (innerB < 0.0) {
+    innerB = 0;
+  } else {
+    innerB = pow(innerB, c[4]);
+  }
+  std::cout << "comps are " << (x+c[2])/c[3] << " " << c[4] << " " << innerB << std::endl;
+  // C1 + C2 * [innerB]^ C5
+  double outerB = c[0]+c[1]*innerB;
+  if (outerB < 0.0) {
+    outerB = 0;
+  } else {
+    outerB = pow(outerB, 1./c[7]);
+  }
+  return c[5] + c[6]*outerB; // nan
+  
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], c[4]), 1./c[7]);	// nan
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], c[4]), 1./2.0);	// nan
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], 2.0), 1./c[7]);	// fine
@@ -33,6 +48,34 @@ double getsuperval (const double x, const SupEll& c) {
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], 2.0), 1./2.0);	// fine
 }
 
+double getRadialCoord(double H, double W, double theta, double N) {
+  double numerator = 0.25*H*W;
+  if (numerator < 0.0) {
+    numerator = 0.0;
+  } else {
+    numerator = std::pow(numerator, N);
+  }
+  double denomH= 0.5*H*std::sin(theta);
+  if (denomH < 0.0) {
+    denomH = 0;
+  } else {
+    denomH = std::pow(denomH, N);
+  }
+  double denomW= 0.5*W*std::cos(theta);
+  if (denomH < 0.0) {
+    denomW = 0;
+  } else {
+    denomW = std::pow(denomW, N);
+  }
+
+  double denom = denomH + denomW;
+  // If the denominator is 0 or both the numerator and denominator are negative
+  if ((denom == 0.0) || (numerator * denom < 0.0)) {
+   return 0.0;
+  } else {
+    return std::pow(numerator / denom, 1.0/N);
+  }
+}
 
 // execution starts here
 
@@ -68,11 +111,13 @@ int main(int argc, char const *argv[]) {
     for (size_t it=0; it<nt ; ++it) {
       const double theta = 2.0*3.14159265358979*it/(double)nt;
       // compute r from H, W, N, theta
-      const double r = std::pow( std::pow(0.25*H*W, N) /
+      const double r = getRadialCoord(H, W, theta, N);
+      /* const double r = std::pow( std::pow(0.25*H*W, N) /
                                 (std::pow(0.5*H*std::sin(theta), N)+
                                  std::pow(0.5*W*std::cos(theta), N))
-                                , 1.0/N);
+                                , 1.0/N); */
       // compute yol, zol from r, theta, Z0
+      std::cout << "r: " << r << std::endl;
       const double yol = r * std::sin(theta);
       const double zol = r * std::cos(theta) + Z0;
       std::cout << "  " << xol << " " << yol << " " << zol << std::endl;
