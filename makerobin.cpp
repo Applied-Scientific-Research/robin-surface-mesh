@@ -48,7 +48,7 @@ std::complex<double> getsuperval (const double x, const SupEll& c) {
   std::cout << " *c7=" << tmp;
   tmp = tmp + c[5];
   std::cout << " +c6=" << tmp << std::endl;
-  return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], c[4]), 1.0/c[7]);	// nan
+  return c[5] + c[6]*std::pow(std::min(0.0,c[0]+c[1]*std::pow((x+c[2])/c[3], c[4])), 1.0/c[7]);	// nan
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], c[4]), 1./c[7]);	// nan
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], c[4]), 1./2.0);	// nan
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], 2.0), 1./c[7]);	// fine
