@@ -11,13 +11,19 @@
 #include <vector>
 #include <array>
 
-int getsection (const double x) {
+int get_fuselage_section (const double x) {
   int idx = -1;
   if (x >= 0.0 and x < 0.4) idx = 0;
   else if (x >= 0.4 and x < 0.8) idx = 1;
   else if (x >= 0.8 and x < 1.9) idx = 2;
   else if (x >= 1.9 and x <= 2.0) idx = 3;
-  else idx = -1;
+  return idx;
+}
+
+int get_pylon_section (const double x) {
+  int idx = -1;
+  if (x >= 0.4 and x < 0.8) idx = 4;
+  else if (x >= 0.8 and x < 1.018) idx = 5;
   return idx;
 }
 
@@ -61,6 +67,8 @@ std::complex<double> getRadialCoord(std::complex<double> H, std::complex<double>
 int main(int argc, char const *argv[]) {
   std::cout << "Generating ROBIN model" << std::endl;
 
+  // first 4 rows are the fuselage
+  // need to add 2 more rows each for the pylon
   std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, 0.0, 0.25, 1.8},
                                  {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
@@ -89,7 +97,7 @@ int main(int argc, char const *argv[]) {
   for (size_t ix=1; ix<nx; ix++) {
     //const double xol = 2.0 * ix / (double)nx;
     const double xol = 2.0 * ix / (double)nx;
-    const int isec = getsection(xol);
+    const int isec = get_fuselage_section(xol);
     if (isec == -1) {
       std::cout << "ERROR: isec == " << isec << std::endl;
       exit(0);
