@@ -27,28 +27,28 @@ int get_pylon_section (const double x) {
   return idx;
 }
 
-using SupEll = std::array<std::complex<double>, 8>;
+using SupEll = std::array<double, 8>;
 
-std::complex<double> getsuperval (const double x, const SupEll& c) {
+double getsuperval (const double x, const SupEll& c) {
   //std::cout << "se is " << c[0] << " " << c[1] << " " << c[2] << " " << c[3] << " " << c[4] << " " << c[5] << " " << c[6] << " " << c[7] << std::endl;
   //std::cout << "comps are " << ((x+c[2])/c[3]) << " " << c[4] << std::endl;
-  std::complex<double> tmp = x+c[2];
-  std::cout << "x+c3=" << tmp;
+  double tmp = x+c[2];
+  //std::cout << "x+c3=" << tmp;
   tmp = tmp/c[3];
-  std::cout << " /c4=" << tmp;
+  //std::cout << " /c4=" << tmp;
   tmp = std::pow(tmp, c[4]);
-  std::cout << " ^c5=" << tmp;
+  //std::cout << " ^c5=" << tmp;
   tmp = tmp*c[1];
-  std::cout << " *c2=" << tmp;
+  //std::cout << " *c2=" << tmp;
   tmp = tmp+c[0];
-  std::cout << " +c1=" << tmp;
+  //std::cout << " +c1=" << tmp;
   tmp = std::pow(tmp, 1.0/c[7]);
-  std::cout << "^(1/c8)=" << tmp;
+  //std::cout << "^(1/c8)=" << tmp;
   tmp = tmp*c[6];
-  std::cout << " *c7=" << tmp;
+  //std::cout << " *c7=" << tmp;
   tmp = tmp + c[5];
-  std::cout << " +c6=" << tmp << std::endl;
-  return c[5] + c[6]*std::pow(std::min(0.0,c[0]+c[1]*std::pow((x+c[2])/c[3], c[4])), 1.0/c[7]);	// nan
+  //std::cout << " +c6=" << tmp << std::endl;
+  return c[5] + c[6]*std::pow(std::max(0.0,c[0]+c[1]*std::pow((x+c[2])/c[3], c[4])), 1.0/c[7]);	// nan
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], c[4]), 1./c[7]);	// nan
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], c[4]), 1./2.0);	// nan
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], 2.0), 1./c[7]);	// fine
@@ -56,10 +56,10 @@ std::complex<double> getsuperval (const double x, const SupEll& c) {
   //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], 2.0), 1./2.0);	// fine
 }
 
-std::complex<double> getRadialCoord(std::complex<double> H, std::complex<double> W, double theta, std::complex<double> N) {
-  std::complex<double> numer = 0.25*H*W;
+double getRadialCoord(double H, double W, double theta, double N) {
+  double numer = 0.25*H*W;
   // Note the new std::abs - this is to ensure that values are positive, we really only compute one quadrant
-  std::complex<double> denom = std::pow(0.5*H*std::abs(std::sin(theta)), N) + std::pow(0.5*W*std::abs(std::cos(theta)), N);
+  double denom = std::pow(0.5*H*std::abs(std::sin(theta)), N) + std::pow(0.5*W*std::abs(std::cos(theta)), N);
   //std::cout << "Numer=" << numer << " Denom=" << denom << " R=" << (numer / std::pow(denom, 1.0/N)) << std::endl;
   return numer / std::pow(denom, 1.0/N); 
 }
@@ -119,7 +119,7 @@ int main(int argc, char const *argv[]) {
 
   std::cout << std::endl << "generating nodes" << std::endl << std::endl;
   //for (size_t ix=0; ix<nx+1; ix++) {
-  for (size_t ix=40; ix<41; ix++) {
+  for (size_t ix=1; ix<200; ix++) {
 
     const double xol = 2.0 * ix / (double)nx;
     const int isec = get_fuselage_section(xol);
@@ -127,31 +127,31 @@ int main(int argc, char const *argv[]) {
       std::cout << "ERROR: isec == " << isec << std::endl;
       exit(0);
     }
-    std::cout << "x index=" << ix << " with xol=" << xol << " uses station=" << isec << std::endl;
+    //std::cout << "x index=" << ix << " with xol=" << xol << " uses station=" << isec << std::endl;
 
     // compute H, W, Z0, and N from xol and the constants
-    std::cout << "H:" << std::endl;
-    const std::complex<double> H  = getsuperval(xol, hcoeff[isec]);
-    std::cout << "W:" << std::endl;
-    const std::complex<double> W  = getsuperval(xol, wcoeff[isec]);
-    std::cout << "Z:" << std::endl;
-    const std::complex<double> Z0 = getsuperval(xol, zcoeff[isec]);
-    std::cout << "N:" << std::endl;
-    const std::complex<double> N  = getsuperval(xol, ncoeff[isec]);
-    std::cout << "at xol=" << xol << " have " << H << " " << W << " " << Z0 << " " << N << std::endl;
+    //std::cout << "H:" << std::endl;
+    const double H  = getsuperval(xol, hcoeff[isec]);
+    //std::cout << "W:" << std::endl;
+    const double W  = getsuperval(xol, wcoeff[isec]);
+    //std::cout << "Z:" << std::endl;
+    const double Z0 = getsuperval(xol, zcoeff[isec]);
+    //std::cout << "N:" << std::endl;
+    const double N  = getsuperval(xol, ncoeff[isec]);
+    //std::cout << "at xol=" << xol << " have " << H << " " << W << " " << Z0 << " " << N << std::endl;
 
     for (size_t it=0; it<nt ; it++) {
       const double theta = 2.0*3.14159265358979*it/(double)nt;
       // compute r from H, W, N, theta
-      const std::complex<double> r = getRadialCoord(H, W, theta, N);
+      const double r = getRadialCoord(H, W, theta, N);
       // compute yol, zol from r, theta, Z0
-      const std::complex<double> yol = r * std::sin(theta);
-      const std::complex<double> zol = r * std::cos(theta) + Z0;
-      std::cout << r.real() << "  " << xol << " " << yol.real() << " " << zol.real() << std::endl;
+      const double yol = r * std::sin(theta);
+      const double zol = r * std::cos(theta) + Z0;
+      std::cout /*<< r */<< "  " << xol << " " << yol << " " << zol << std::endl;
       //exit(0);
     }
 
-    exit(0);
+    //exit(0);
     // make the triangles for this band
   }
 
