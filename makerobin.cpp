@@ -145,6 +145,7 @@ int main(int argc, char const *argv[]) {
       // compute r from H, W, N, theta
       const double r = getRadialCoord(H, W, theta, N);
       // compute yol, zol from r, theta, Z0
+      std::cout << "r: " << r << std::endl;
       const double yol = r * std::sin(theta);
       const double zol = r * std::cos(theta) + Z0;
       std::cout /*<< r */<< "  " << xol << " " << yol << " " << zol << std::endl;
