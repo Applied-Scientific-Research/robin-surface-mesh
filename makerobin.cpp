@@ -58,8 +58,9 @@ std::complex<double> getsuperval (const double x, const SupEll& c) {
 
 std::complex<double> getRadialCoord(std::complex<double> H, std::complex<double> W, double theta, std::complex<double> N) {
   std::complex<double> numer = 0.25*H*W;
-  std::complex<double> denom = std::pow(0.5*H*std::sin(theta), N) + std::pow(0.5*W*std::cos(theta), N);
-  std::cout << "Numer=" << numer << " Denom=" << denom << std::endl;
+  // Note the new std::abs - this is to ensure that values are positive, we really only compute one quadrant
+  std::complex<double> denom = std::pow(0.5*H*std::abs(std::sin(theta)), N) + std::pow(0.5*W*std::abs(std::cos(theta)), N);
+  //std::cout << "Numer=" << numer << " Denom=" << denom << " R=" << (numer / std::pow(denom, 1.0/N)) << std::endl;
   return numer / std::pow(denom, 1.0/N); 
 }
 // execution starts here
@@ -69,39 +70,65 @@ int main(int argc, char const *argv[]) {
 
   // first 4 rows are the fuselage
   // need to add 2 more rows each for the pylon
-  std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, 0.0, 0.25, 1.8},
-                                 {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+
+  // fixes:
+  // 1) if there's a 0.0 in the second col, then change the 4th and 5th cols to 1.0
+  // 2) if there's a 0.0 in C7, change C8 to 1.0, same as above, to prevent nan/inf
+  // 3) the 0.4..0.8 section (row 2) coefficients in C1 needed to go into C6
+  // 4) third column must ensure that "x+c3" is positive - original data might have this wrong
+
+  //std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, 0.0, 0.25, 1.8},
+  //                               {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
+  //                               {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0} };
+  std::vector<SupEll> hcoeff = { {1.0, -1.0, 0.0, 0.4, 1.8, 0.0, 0.25, 1.8},
+                                 {0.0, 0.0, 0.0, 1.0, 1.0, 0.25, 0.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
                                  {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0} };
 
-  std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, 0.4, 2.0, 0.0, 0.25, 2.0},
-                                 {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, 0.4, 2.0, 0.0, 0.25, 2.0},
+  //                               {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
+  //                               {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0} };
+  std::vector<SupEll> wcoeff = { {1.0, -1.0, 0.0, 0.4, 2.0, 0.0, 0.25, 2.0},
+                                 {0.0, 0.0, 0.0, 1.0, 1.0, 0.25, 0.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
                                  {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0} };
 
-  std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, -0.08, 0.08, 1.8},
-                                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, -0.08, 0.08, 1.8},
+  //                               {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
+  //                               {0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} };
+  std::vector<SupEll> zcoeff = { {1.0, -1.0, 0.0, 0.4, 1.8, -0.08, 0.08, 1.8},
+                                 {0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
-                                 {0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} };
+                                 {0.04, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0} };
 
+  //std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
+  //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 0.0, 0.0},
+  //                               {2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} };
   std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
-                                 {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-                                 {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 0.0, 0.0},
-                                 {2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} };
+                                 {0.0, 0.0, 0.0, 1.0, 1.0, 5.0, 0.0, 1.0},
+                                 {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 0.0, 1.0},
+                                 {2.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0} };
 
   //double tx[3] = {0.5, 0.5, 0.5};
-  const size_t nx = 39;
-  const size_t nt = 19;
+  const size_t nx = 40;
+  const size_t nt = 40;
 
-  std::cout << std::endl << "generating nodes" << std::endl;
-  for (size_t ix=1; ix<nx; ix++) {
-    //const double xol = 2.0 * ix / (double)nx;
+  std::cout << std::endl << "generating nodes" << std::endl << std::endl;
+  //for (size_t ix=0; ix<nx+1; ix++) {
+  for (size_t ix=7; ix<8; ix++) {
+
     const double xol = 2.0 * ix / (double)nx;
     const int isec = get_fuselage_section(xol);
     if (isec == -1) {
       std::cout << "ERROR: isec == " << isec << std::endl;
       exit(0);
     }
+    std::cout << "x index=" << ix << " with xol=" << xol << " uses station=" << isec << std::endl;
+
     // compute H, W, Z0, and N from xol and the constants
     std::cout << "H:" << std::endl;
     const std::complex<double> H  = getsuperval(xol, hcoeff[isec]);
@@ -111,7 +138,8 @@ int main(int argc, char const *argv[]) {
     const std::complex<double> Z0 = getsuperval(xol, zcoeff[isec]);
     std::cout << "N:" << std::endl;
     const std::complex<double> N  = getsuperval(xol, ncoeff[isec]);
-    //std::cout << "at xol=" << xol << " have " << H << " " << W << " " << Z0 << " " << N << std::endl;
+    std::cout << "at xol=" << xol << " have " << H << " " << W << " " << Z0 << " " << N << std::endl;
+
     for (size_t it=0; it<nt ; it++) {
       const double theta = 2.0*3.14159265358979*it/(double)nt;
       // compute r from H, W, N, theta
@@ -126,6 +154,8 @@ int main(int argc, char const *argv[]) {
     exit(0);
     // make the triangles for this band
   }
+
+  // generate a second closed tri mesh for the pylon, then CSG them together
 
   std::cout << std::endl << "generating triangles" << std::endl;
 
