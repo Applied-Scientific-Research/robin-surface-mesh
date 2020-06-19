@@ -102,7 +102,7 @@ int main(int argc, char const *argv[]) {
   std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, -0.4, 1.8, -0.08, 0.08, 1.8},
                                  {0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
-                                 {0.04, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0} };
+                                 {0.04, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0} };
 
   //std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
   //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
@@ -119,7 +119,7 @@ int main(int argc, char const *argv[]) {
 
   std::cout << std::endl << "generating nodes" << std::endl << std::endl;
   //for (size_t ix=0; ix<nx+1; ix++) {
-  for (size_t ix=35; ix<36; ix++) {
+  for (size_t ix=40; ix<41; ix++) {
 
     const double xol = 2.0 * ix / (double)nx;
     const int isec = get_fuselage_section(xol);
