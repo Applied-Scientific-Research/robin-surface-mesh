@@ -61,7 +61,8 @@ double getsuperval (const double x, const SupEll& c) {
 double getRadialCoord(double H, double W, double theta, double N) {
   double numer = 0.25*H*W;
   // Note the new std::abs - this is to ensure that values are positive, we really only compute one quadrant
-  double denom = std::pow(0.5*H*std::abs(std::sin(theta)), N) + std::pow(0.5*W*std::abs(std::cos(theta)), N) + 1;
+  double denom = std::pow(0.5*H*std::abs(std::sin(theta)), N) + std::pow(0.5*W*std::abs(std::cos(theta)), N);
+  if (!denom) { denom = 1;}
   //std::cout << "Numer=" << numer << " Denom=" << denom << " R=" << (numer / std::pow(denom, 1.0/N)) << std::endl;
   return numer / std::pow(denom, 1.0/N); 
 }
@@ -176,10 +177,15 @@ int main(int argc, char const *argv[]) {
   }
   file << "f " << 1 << " " << nt << " " << 2 << "\n";
 
-  for (size_t i=1; i < 1; i++) {
-    for (size_t j=0; j < nt; j++) {
-      //file << "f " << 
+  for (size_t r=1; r<2; r++) {
+    file << "f " << r << " " << r+1 << " " << r*+nt << "\n";
+    file << "f " << r << " " << r+nt << " " << r+(2*nt)-1 << "\n";
+    file << "f " << r << " " << r+nt << " " << r+(2*nt)-1 << "\n";
+    for (size_t n=1; n<nt; n++) {
+      file << "f " << r*n << " " << r*n+1 << " " << r*n+nt << "\n";
+      file << "f " << r*n << " " << r*n+nt << " " << r*n+nt+1 << "\n";
     }
+    file << "f " << r*nt << " " << r*2*nt << " " << r*2*nt+1 << "\n";
   }
 
   file.close();
