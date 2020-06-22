@@ -7,7 +7,9 @@
 #include <cstdlib>
 #include <cmath>
 #include <complex>
+#include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 #include <array>
 
@@ -63,8 +65,8 @@ double getRadialCoord(double H, double W, double theta, double N) {
   //std::cout << "Numer=" << numer << " Denom=" << denom << " R=" << (numer / std::pow(denom, 1.0/N)) << std::endl;
   return numer / std::pow(denom, 1.0/N); 
 }
-// execution starts here
 
+// execution starts here
 int main(int argc, char const *argv[]) {
   std::cout << "Generating ROBIN model" << std::endl;
 
@@ -117,9 +119,19 @@ int main(int argc, char const *argv[]) {
   const size_t nx = 40;
   const size_t nt = 40;
 
+  // Open file to write to
+  std::string fileName = "robin.obj";
+  std::ofstream file;
+  file.open(fileName);
+
   std::cout << std::endl << "generating nodes" << std::endl << std::endl;
+  // x=0 produces H=0 and W=0 resulting in r=nan
+  // same for x=2
+  double firstPt[3] = {0.0, 0.0, -0.04};
+  std::cout << firstPt[0] << " " << firstPt[1] << " " << firstPt[2] << std::endl;
+  file << 'v' << " " << firstPt[0] << " " << firstPt[1] << " " << firstPt[2] << "\n";
   //for (size_t ix=0; ix<nx+1; ix++) {
-  for (size_t ix=1; ix<200; ix++) {
+  for (size_t ix=1; ix<nx; ix++) {
 
     const double xol = 2.0 * ix / (double)nx;
     const int isec = get_fuselage_section(xol);
@@ -145,16 +157,22 @@ int main(int argc, char const *argv[]) {
       // compute r from H, W, N, theta
       const double r = getRadialCoord(H, W, theta, N);
       // compute yol, zol from r, theta, Z0
-      std::cout << "r: " << r << std::endl;
+      //std::cout << "r: " << r << std::endl;
       const double yol = r * std::sin(theta);
       const double zol = r * std::cos(theta) + Z0;
-      std::cout /*<< r */<< "  " << xol << " " << yol << " " << zol << std::endl;
+      std::cout /*<< r << "  " */<< xol << " " << yol << " " << zol << std::endl;
+      file << 'v' << " " << xol << " " << yol << " " << zol << "\n";
       //exit(0);
     }
 
     //exit(0);
     // make the triangles for this band
   }
+  // Point to close off the tail
+  double finalPt[3] = {2.0, 0.0, 0.04};
+  std::cout << finalPt[0] << " " << finalPt[1] << " " << finalPt[2] << std::endl;
+  file << 'v' << " " << finalPt[0] << " " << finalPt[1] << " " << finalPt[2] << "\n";
+  file.close();
 
   // generate a second closed tri mesh for the pylon, then CSG them together
 
