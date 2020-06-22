@@ -61,7 +61,7 @@ double getsuperval (const double x, const SupEll& c) {
 double getRadialCoord(double H, double W, double theta, double N) {
   double numer = 0.25*H*W;
   // Note the new std::abs - this is to ensure that values are positive, we really only compute one quadrant
-  double denom = std::pow(0.5*H*std::abs(std::sin(theta)), N) + std::pow(0.5*W*std::abs(std::cos(theta)), N);
+  double denom = std::pow(0.5*H*std::abs(std::sin(theta)), N) + std::pow(0.5*W*std::abs(std::cos(theta)), N) + 1;
   //std::cout << "Numer=" << numer << " Denom=" << denom << " R=" << (numer / std::pow(denom, 1.0/N)) << std::endl;
   return numer / std::pow(denom, 1.0/N); 
 }
@@ -123,15 +123,11 @@ int main(int argc, char const *argv[]) {
   std::string fileName = "robin.obj";
   std::ofstream file;
   file.open(fileName);
+  file << "# Vertices\n";
 
   std::cout << std::endl << "generating nodes" << std::endl << std::endl;
-  // x=0 produces H=0 and W=0 resulting in r=nan
-  // same for x=2
-  double firstPt[3] = {0.0, 0.0, -0.04};
-  std::cout << firstPt[0] << " " << firstPt[1] << " " << firstPt[2] << std::endl;
-  file << 'v' << " " << firstPt[0] << " " << firstPt[1] << " " << firstPt[2] << "\n";
   //for (size_t ix=0; ix<nx+1; ix++) {
-  for (size_t ix=1; ix<nx; ix++) {
+  for (size_t ix=0; ix<nx+1; ix++) {
 
     const double xol = 2.0 * ix / (double)nx;
     const int isec = get_fuselage_section(xol);
@@ -152,7 +148,7 @@ int main(int argc, char const *argv[]) {
     const double N  = getsuperval(xol, ncoeff[isec]);
     //std::cout << "at xol=" << xol << " have " << H << " " << W << " " << Z0 << " " << N << std::endl;
 
-    for (size_t it=0; it<nt ; it++) {
+    for (size_t it=0; it<nt; it++) {
       const double theta = 2.0*3.14159265358979*it/(double)nt;
       // compute r from H, W, N, theta
       const double r = getRadialCoord(H, W, theta, N);
@@ -161,23 +157,32 @@ int main(int argc, char const *argv[]) {
       const double yol = r * std::sin(theta);
       const double zol = r * std::cos(theta) + Z0;
       std::cout /*<< r << "  " */<< xol << " " << yol << " " << zol << std::endl;
-      file << 'v' << " " << xol << " " << yol << " " << zol << "\n";
+      // Write vertice to file
+      file << "v " << xol << " " << yol << " " << zol << "\n";
+      if ((xol == 0) || (xol ==2)) { break; }
       //exit(0);
     }
 
     //exit(0);
-    // make the triangles for this band
   }
-  // Point to close off the tail
-  double finalPt[3] = {2.0, 0.0, 0.04};
-  std::cout << finalPt[0] << " " << finalPt[1] << " " << finalPt[2] << std::endl;
-  file << 'v' << " " << finalPt[0] << " " << finalPt[1] << " " << finalPt[2] << "\n";
-  file.close();
-
   // generate a second closed tri mesh for the pylon, then CSG them together
 
   std::cout << std::endl << "generating triangles" << std::endl;
 
+  // Label faces
+  file << "\n# Faces\n";
+  for (size_t i=2; i < nt; i++) {
+    file << "f " << 1 << " " << i << " " << i+1 << "\n";
+  }
+  file << "f " << 1 << " " << nt << " " << 2 << "\n";
+
+  for (size_t i=1; i < 1; i++) {
+    for (size_t j=0; j < nt; j++) {
+      //file << "f " << 
+    }
+  }
+
+  file.close();
   return 0;
 }
 
