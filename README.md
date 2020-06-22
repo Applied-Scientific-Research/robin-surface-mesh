@@ -1,10 +1,18 @@
 # robin-surface-mesh
 A program to generate a mesh of the ROBIN body - a generic helicopter body shape
 
-### usage
-This code is incomplete! The formulas and coefficients from the paper generate NaN values. Here is how you can build and run the program:
+### Usage
+Here is how you can build and run the program on Linux or OSX (with `g++` installed with Homebrew):
 
-    g++ -o makerobin makerobin.cpp -lm && ./makerobin
+    git clone https://github.com/Applied-Scientific-Research/robin-surface-mesh.git
+    make
+    ./makerobin > out.obj
 
-### notes
-See [the original paper](http://markjstock.org/transfer/20000057579.pdf), page 11, for the formula. The formula seems wrong.
+Output is to a triangle mesh file in OBJ format containing both the fuselage and the pylon. You can change the number of lengthwise and circumferential stations on the command-line. See a list of options with:
+
+    ./makerobin -h
+
+### Notes
+The formulas and coefficients available in the literature are incorrect! They will not only generate NaN values but also not create the correct shape. It seems that no authors mention this, despite echoing the same formulae and coefficients as in the original paper. This program contains the correct coefficients and formulae, and it is hoped that this brings some clarity to the field.
+Here is [the original report](https://ntrs.nasa.gov/search.jsp?R=19790017844), note equation 5 and the tables on page 8.
+
