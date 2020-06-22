@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-O2
+CXXFLAGS=-O2 -std=c++17
 LIBS=-lm
 
 all : makerobin
