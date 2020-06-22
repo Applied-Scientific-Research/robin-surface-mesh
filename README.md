@@ -2,9 +2,10 @@
 A program to generate a mesh of the ROBIN body - a generic helicopter body shape
 
 ### Usage
-Here is how you can build and run the program on Linux or OSX (with `g++` installed with Homebrew):
+Here is how you can build and run the program on Linux (or OSX with `g++` installed with Homebrew):
 
     git clone https://github.com/Applied-Scientific-Research/robin-surface-mesh.git
+    cd robin-surface-mesh
     make
     ./makerobin > out.obj
 
