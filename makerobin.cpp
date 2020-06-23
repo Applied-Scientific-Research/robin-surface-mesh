@@ -117,8 +117,8 @@ int main(int argc, char const *argv[]) {
                                  {2.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0} };
 
   //double tx[3] = {0.5, 0.5, 0.5};
-  const size_t nx = 40;
-  const size_t nt = 40;
+  const size_t nx = 10;
+  const size_t nt = 10;
 
   // Open file to write to
   std::string fileName = "robin.obj";
@@ -172,22 +172,29 @@ int main(int argc, char const *argv[]) {
 
   // Label faces
   file << "\n# Faces\n";
-  for (size_t i=2; i < nt; i++) {
+  for (size_t i=2; i<nt+1; i++) {
     file << "f " << 1 << " " << i << " " << i+1 << "\n";
   }
-  file << "f " << 1 << " " << nt << " " << 2 << "\n";
+  file << "f " << 1 << " " << nt+1 << " " << 2 << "\n";
 
-  for (size_t r=1; r<2; r++) {
-    file << "f " << r << " " << r+1 << " " << r*+nt << "\n";
-    file << "f " << r << " " << r+nt << " " << r+(2*nt)-1 << "\n";
-    file << "f " << r << " " << r+nt << " " << r+(2*nt)-1 << "\n";
+  for (size_t r=0; r<nx-2; r++) {
+    file << "f " << 2+r*nt << " " << 3+r*nt << " " << 2+(r+1)*nt << "\n";
     for (size_t n=1; n<nt; n++) {
-      file << "f " << r*n << " " << r*n+1 << " " << r*n+nt << "\n";
-      file << "f " << r*n << " " << r*n+nt << " " << r*n+nt+1 << "\n";
+      file << "f " << (2+n)+r*nt << " " << (1+n)+(r+1)*nt << " " << (2+n)+(r+1)*nt << "\n";
+      file << "f " << (2+n)+r*nt << " " << (3+n)+r*nt << " " << (2+n)+(r+1)*nt << "\n";
     }
-    file << "f " << r*nt << " " << r*2*nt << " " << r*2*nt+1 << "\n";
+    file << "f " << 1+(r+1)*nt << " " << (r+2)*nt << " " << 1+(r+2)*nt << "\n";
+    file << "f " << 1+(r+1)*nt << " " << 2+r*nt << " " << 1+(r+2)*nt << "\n";
+    file << "f " << 2+r*nt << " " << 1+(r+2)*nt << " " << 2+(r+1)*nt << "\n";
   }
 
+  size_t lastVert = nt*(nx-1)+2;
+  for (size_t i=2; i<nt+1; i++) {
+    file << "f " << i+nt*(nx-2) << " " << (i+1)+nt*(nx-2) << " " << lastVert << "\n";
+  }
+  file << "f " << 2+nt*(nx-2) << " " << lastVert-1 << " " << lastVert << "\n";
+  // Done writing faces
+ 
   file.close();
   return 0;
 }
