@@ -67,6 +67,130 @@ double getRadialCoord(double H, double W, double theta, double N) {
   return numer / std::pow(denom, 1.0/N); 
 }
 
+void create_fuselage_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, std::vector<SupEll> wcoeff,
+                       std::vector<SupEll> zcoeff, std::vector<SupEll> ncoeff, const std::string fileName) {
+  // Open file to write to
+  std::ofstream file;
+  file.open(fileName);
+  file << "# Vertices\n";
+
+  std::cout << std::endl << "Generating Fuselage Nodes" << std::endl << std::endl;
+  for (size_t ix=0; ix<nx+1; ix++) {
+    
+    const double xol = 2.0 * ix / (double)nx;
+    const int fusSec = get_fuselage_section(xol);
+    if (fusSec == -1) {
+      std::cout << "ERROR: fusSec == " << fusSec << std::endl;
+      exit(0);
+    }
+    //std::cout << "x index=" << ix << " with xol=" << xol << " uses station=" << fusSec << std::endl;
+
+    // compute H, W, Z0, and N from xol and the constants
+    //std::cout << "H:" << std::endl;
+    const double H  = getsuperval(xol, hcoeff[fusSec]);
+    //std::cout << "W:" << std::endl;
+    const double W  = getsuperval(xol, wcoeff[fusSec]);
+    //std::cout << "Z:" << std::endl;
+    const double Z0 = getsuperval(xol, zcoeff[fusSec]);
+    //std::cout << "N:" << std::endl;
+    const double N  = getsuperval(xol, ncoeff[fusSec]);
+    //std::cout << "at xol=" << xol << " have " << H << " " << W << " " << Z0 << " " << N << std::endl;
+
+    for (size_t it=0; it<nt; it++) {
+      const double theta = 2.0*3.14159265358979*it/(double)nt;
+      // compute r from H, W, N, theta
+      const double r = getRadialCoord(H, W, theta, N);
+      // compute yol, zol from r, theta, Z0
+      //std::cout << "r: " << r << std::endl;
+      const double yol = r * std::sin(theta);
+      const double zol = r * std::cos(theta) + Z0;
+      std::cout /*<< r << "  " */<< xol << " " << yol << " " << zol << std::endl;
+      
+      // Write vertice to file
+      file << "v " << xol << " " << yol << " " << zol << "\n";
+      if ((xol == 0) || (xol == 2)) { break; }
+    }
+  }
+ 
+  // generate a second closed tri mesh for the pylon, then CSG them together
+
+  std::cout << std::endl << "generating triangles" << std::endl;
+
+  // Label faces
+  file << "\n# Faces\n";
+  for (size_t i=2; i<nt+1; i++) {
+    file << "f " << 1 << " " << i << " " << i+1 << "\n";
+  }
+  file << "f " << 1 << " " << nt+1 << " " << 2 << "\n";
+
+  // Link the two rings together to make faces
+  for (size_t r=0; r<nx-2; r++) {
+    file << "f " << 3+r*nt << " " << 2+r*nt << " " << 2+(r+1)*nt << "\n";
+    // Runs through all nodes in the ring
+    for (size_t n=1; n<nt; n++) {
+      file << "f " << (2+n)+r*nt << " " << (1+n)+(r+1)*nt << " " << (2+n)+(r+1)*nt << "\n";
+      file << "f " << (3+n)+r*nt << " " << (2+n)+r*nt << " " << (2+n)+(r+1)*nt << "\n";
+    }
+    file << "f " << 1+(r+1)*nt << " " << 1+(r+2)*nt << " " << (r+2)*nt << "\n";
+    //file << "f " << 2+r*nt << " " << 1+(r+2)*nt << " " << 1+(r+1)*nt << "\n";
+    file << "f " << 2+(r+1)*nt << " " << 2+r*nt << " " << 1+(r+1)*nt << "\n";
+  }
+
+  size_t lastVert = nt*(nx-1)+2;
+  for (size_t i=2; i<nt+1; i++) {
+    file << "f " << (i+1)+nt*(nx-2) << " " << i+nt*(nx-2) << " " << lastVert << "\n";
+  }
+  file << "f " << 2+nt*(nx-2) << " " << lastVert-1 << " " << lastVert << "\n";
+  // Done writing faces
+ 
+  file.close();
+}
+
+
+void create_pylon_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, std::vector<SupEll> wcoeff,
+                       std::vector<SupEll> zcoeff, std::vector<SupEll> ncoeff, const std::string fileName) {
+  std::ofstream file;
+  file.open(fileName);
+  std::cout << std::endl << "Generating Pylon Nodes" << std::endl << std::endl;
+  for (size_t ix=0; ix<nx+1; ix++) {
+    
+    const double xol = 2.0 * ix / (double)nx;
+    const int pylSec = get_pylon_section(xol);
+    if (pylSec == -1) {
+      std::cout << "ERROR: pylSec == " << pylSec << std::endl;
+      exit(0);
+    }
+    //std::cout << "x index=" << ix << " with xol=" << xol << " uses station=" << fusSec << std::endl;
+
+    // compute H, W, Z0, and N from xol and the constants
+    //std::cout << "H:" << std::endl;
+    const double H  = getsuperval(xol, hcoeff[pylSec]);
+    //std::cout << "W:" << std::endl;
+    const double W  = getsuperval(xol, wcoeff[pylSec]);
+    //std::cout << "Z:" << std::endl;
+    const double Z0 = getsuperval(xol, zcoeff[pylSec]);
+    //std::cout << "N:" << std::endl;
+    const double N  = getsuperval(xol, ncoeff[pylSec]);
+    //std::cout << "at xol=" << xol << " have " << H << " " << W << " " << Z0 << " " << N << std::endl;
+
+    for (size_t it=0; it<nt; it++) {
+      const double theta = 2.0*3.14159265358979*it/(double)nt;
+      // compute r from H, W, N, theta
+      const double r = getRadialCoord(H, W, theta, N);
+      // compute yol, zol from r, theta, Z0
+      //std::cout << "r: " << r << std::endl;
+      const double yol = r * std::sin(theta);
+      const double zol = r * std::cos(theta) + Z0;
+      std::cout /*<< r << "  " */<< xol << " " << yol << " " << zol << std::endl;
+      
+      // Write vertice to file
+      file << "v " << xol << " " << yol << " " << zol << "\n";
+      //if ((xol == 0) || (xol == 2)) { break; }
+    }
+  }
+  file.close();
+}
+
 // execution starts here
 int main(int argc, char const *argv[]) {
   std::cout << "Generating ROBIN model" << std::endl;
@@ -135,85 +259,7 @@ int main(int argc, char const *argv[]) {
   //double tx[3] = {0.5, 0.5, 0.5};
   const size_t nx = 40;
   const size_t nt = 40;
-
-  // Open file to write to
-  std::string fileName = "robin.obj";
-  std::ofstream file;
-  file.open(fileName);
-  file << "# Vertices\n";
-
-  std::cout << std::endl << "generating nodes" << std::endl << std::endl;
-  //for (size_t ix=0; ix<nx+1; ix++) {
-  for (size_t ix=0; ix<nx+1; ix++) {
-
-    const double xol = 2.0 * ix / (double)nx;
-    const int isec = get_fuselage_section(xol);
-    if (isec == -1) {
-      std::cout << "ERROR: isec == " << isec << std::endl;
-      exit(0);
-    }
-    //std::cout << "x index=" << ix << " with xol=" << xol << " uses station=" << isec << std::endl;
-
-    // compute H, W, Z0, and N from xol and the constants
-    //std::cout << "H:" << std::endl;
-    const double H  = getsuperval(xol, hcoeff[isec]);
-    //std::cout << "W:" << std::endl;
-    const double W  = getsuperval(xol, wcoeff[isec]);
-    //std::cout << "Z:" << std::endl;
-    const double Z0 = getsuperval(xol, zcoeff[isec]);
-    //std::cout << "N:" << std::endl;
-    const double N  = getsuperval(xol, ncoeff[isec]);
-    //std::cout << "at xol=" << xol << " have " << H << " " << W << " " << Z0 << " " << N << std::endl;
-
-    for (size_t it=0; it<nt; it++) {
-      const double theta = 2.0*3.14159265358979*it/(double)nt;
-      // compute r from H, W, N, theta
-      const double r = getRadialCoord(H, W, theta, N);
-      // compute yol, zol from r, theta, Z0
-      //std::cout << "r: " << r << std::endl;
-      const double yol = r * std::sin(theta);
-      const double zol = r * std::cos(theta) + Z0;
-      std::cout /*<< r << "  " */<< xol << " " << yol << " " << zol << std::endl;
-      // Write vertice to file
-      file << "v " << xol << " " << yol << " " << zol << "\n";
-      if ((xol == 0) || (xol ==2)) { break; }
-      //exit(0);
-    }
-
-    //exit(0);
-  }
-  // generate a second closed tri mesh for the pylon, then CSG them together
-
-  std::cout << std::endl << "generating triangles" << std::endl;
-
-  // Label faces
-  file << "\n# Faces\n";
-  for (size_t i=2; i<nt+1; i++) {
-    file << "f " << 1 << " " << i << " " << i+1 << "\n";
-  }
-  file << "f " << 1 << " " << nt+1 << " " << 2 << "\n";
-
-  // Link the two rings together to make faces
-  for (size_t r=0; r<nx-2; r++) {
-    file << "f " << 3+r*nt << " " << 2+r*nt << " " << 2+(r+1)*nt << "\n";
-    // Runs through all nodes in the ring
-    for (size_t n=1; n<nt; n++) {
-      file << "f " << (2+n)+r*nt << " " << (1+n)+(r+1)*nt << " " << (2+n)+(r+1)*nt << "\n";
-      file << "f " << (3+n)+r*nt << " " << (2+n)+r*nt << " " << (2+n)+(r+1)*nt << "\n";
-    }
-    file << "f " << 1+(r+1)*nt << " " << 1+(r+2)*nt << " " << (r+2)*nt << "\n";
-    //file << "f " << 2+r*nt << " " << 1+(r+2)*nt << " " << 1+(r+1)*nt << "\n";
-    file << "f " << 2+(r+1)*nt << " " << 2+r*nt << " " << 1+(r+1)*nt << "\n";
-  }
-
-  size_t lastVert = nt*(nx-1)+2;
-  for (size_t i=2; i<nt+1; i++) {
-    file << "f " << (i+1)+nt*(nx-2) << " " << i+nt*(nx-2) << " " << lastVert << "\n";
-  }
-  file << "f " << 2+nt*(nx-2) << " " << lastVert-1 << " " << lastVert << "\n";
-  // Done writing faces
- 
-  file.close();
+  const std::string fileName = "robin_fuselage.obj";
+  create_fuselage_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, fileName);
   return 0;
 }
-
