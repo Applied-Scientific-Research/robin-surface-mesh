@@ -25,7 +25,7 @@ int get_fuselage_section (const double x) {
 int get_pylon_section (const double x) {
   int idx = -1;
   if (x >= 0.4 and x < 0.8) idx = 4;
-  else if (x >= 0.8 and x < 1.018) idx = 5;
+  else if (x >= 0.8 and x <= 1.018) idx = 5;
   return idx;
 }
 
@@ -69,19 +69,19 @@ double getRadialCoord(double H, double W, double theta, double N) {
 
 void create_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, std::vector<SupEll> wcoeff,
                  std::vector<SupEll> zcoeff, std::vector<SupEll> ncoeff, const std::string fileName,
-                 int (*getSection)(double)) {
+                 int (*getSection)(double), const double xBegin, const double xEnd) {
   // Open file to write to
   std::ofstream file;
   file.open(fileName);
   file << "# Vertices\n";
 
-  std::cout << std::endl << "Generating Fuselage Nodes" << std::endl << std::endl;
+  std::cout << std::endl << "Generating Nodes" << std::endl << std::endl;
   for (size_t ix=0; ix<nx+1; ix++) {
     
-    const double xol = 2.0 * ix / (double)nx;
+    const double xol = ((xEnd - xBegin) * ix / (double)nx) + xBegin;
     const int fusSec = getSection(xol);
     if (fusSec == -1) {
-      std::cout << "ERROR: fusSec == " << fusSec << std::endl;
+      std::cout << "ERROR: fusSec == " << fusSec << " x == " << xol << std::endl;
       exit(0);
     }
     //std::cout << "x index=" << ix << " with xol=" << xol << " uses station=" << fusSec << std::endl;
@@ -181,10 +181,16 @@ int main(int argc, char const *argv[]) {
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0} };
 
   //double tx[3] = {0.5, 0.5, 0.5};
-  const size_t nx = 40;
-  const size_t nt = 40;
+  const size_t nx = 10;
+  const size_t nt = 10;
   const std::string fileName = "robin_fuselage.obj";
-  create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, fileName, get_fuselage_section);
+  const double fusBegin = 0.0;
+  const double fusEnd = 2.0;
+  const double pylBegin = 0.4;
+  const double pylEnd = 1.018;
+  const std::string pFileName = "robin_pylon.obj";
+
+  create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, fileName, get_fuselage_section, fusBegin, fusEnd);
   // generate a second closed tri mesh for the pylon, then CSG them together
 
   std::cout << std::endl << "Generating Triangles" << std::endl;
@@ -216,6 +222,8 @@ int main(int argc, char const *argv[]) {
   }
   file << "f " << 2+nt*(nx-2) << " " << lastVert-1 << " " << lastVert << "\n";
   // Done writing faces
-  file.close(); 
+  file.close();
+
+  create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, pFileName, get_pylon_section, pylBegin, pylEnd);
   return 0;
 }
