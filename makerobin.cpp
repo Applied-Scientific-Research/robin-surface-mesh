@@ -107,9 +107,9 @@ void create_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, s
       const double zol = r * std::cos(theta) + Z0;
       std::cout /*<< r << "  " */<< xol << " " << yol << " " << zol << std::endl;
       
-      // Write vertice to file
+      // Write vertex to file
       file << "v " << xol << " " << yol << " " << zol << "\n";
-      if ((xol == 0) || (xol == 2)) { break; }
+      if ((ix == 0) || (ix == nx)) { break; }
     }
   }
   file.close();
@@ -205,15 +205,17 @@ int main(int argc, char const *argv[]) {
 
   // Link the two rings together to make faces
   for (size_t r=0; r<nx-2; r++) {
-    file << "f " << 3+r*nt << " " << 2+r*nt << " " << 2+(r+1)*nt << "\n";
+    // node indices for rings 1 and 2
+    const size_t ir1 = nt*r + 2;
+    const size_t ir2 = nt*(r+1) + 2;
+
     // Runs through all nodes in the ring
-    for (size_t n=1; n<nt; n++) {
-      file << "f " << (2+n)+r*nt << " " << (1+n)+(r+1)*nt << " " << (2+n)+(r+1)*nt << "\n";
-      file << "f " << (3+n)+r*nt << " " << (2+n)+r*nt << " " << (2+n)+(r+1)*nt << "\n";
+    for (size_t n=0; n<nt-1; n++) {
+      file << "f " << ir1+n << " " << ir2+n << " " << ir1+n+1 << "\n";
+      file << "f " << ir2+n << " " << ir2+n+1 << " " << ir1+n+1 << "\n";
     }
-    file << "f " << 1+(r+1)*nt << " " << 1+(r+2)*nt << " " << (r+2)*nt << "\n";
-    //file << "f " << 2+r*nt << " " << 1+(r+2)*nt << " " << 1+(r+1)*nt << "\n";
-    file << "f " << 2+(r+1)*nt << " " << 2+r*nt << " " << 1+(r+1)*nt << "\n";
+    file << "f " << ir1+nt-1 << " " << ir2+nt-1 << " " << ir1 << "\n";
+    file << "f " << ir2+nt-1 << " " << ir2 << " " << ir1 << "\n";
   }
 
   size_t lastVert = nt*(nx-1)+2;
