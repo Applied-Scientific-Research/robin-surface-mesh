@@ -186,14 +186,14 @@ int main(int argc, char const *argv[]) {
   const std::string fileName = "robin_fuselage.obj";
   const double fusBegin = 0.0;
   const double fusEnd = 2.0;
+  const std::string pFileName = "robin_pylon.obj";
   const double pylBegin = 0.4;
   const double pylEnd = 1.018;
-  const std::string pFileName = "robin_pylon.obj";
 
+  std::cout << "Createing Fuselage Mesh" << std::endl;
   create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, fileName, get_fuselage_section, fusBegin, fusEnd);
   // generate a second closed tri mesh for the pylon, then CSG them together
 
-  std::cout << std::endl << "Generating Triangles" << std::endl;
   // Label faces
   std::ofstream file;
   file.open(fileName, std::ios_base::app);
@@ -226,6 +226,7 @@ int main(int argc, char const *argv[]) {
   // Done writing faces
   file.close();
 
+  std::cout << "Createing Pylon Mesh" << std::endl;
   create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, pFileName, get_pylon_section, pylBegin, pylEnd);
   return 0;
 }
