@@ -188,6 +188,11 @@ int main(int argc, char const *argv[]) {
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0} };
 
   // Read in command line inputs
+  if (argc != 4) {
+    std::cerr << "Incorrect number of arguments: " << argc << std::endl;
+    std::cout << "Argument order is [nx fuselage] [nt fuselage] [nx pylon] [nt pylon]\n";
+    exit(0);
+  }
   std::string num = argv[1];
   long long nx;
   try {
