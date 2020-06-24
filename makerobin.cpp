@@ -209,9 +209,39 @@ int main(int argc, char const *argv[]) {
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0},
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0} };
 
-  //double tx[3] = {0.5, 0.5, 0.5};
-  const size_t nx = 40;
-  const size_t nt = 40;
+  // Read in command line inputs
+  std::string num = argv[1];
+  long long nx;
+  try {
+    std::size_t pos;
+    nx = std::stoll(num, &pos);
+    // check if input is mix of numbers and chars
+    // 1zz converts to 1
+    if (pos < num.size()) {
+      std::cerr << "Trailing characters after number: " << num << '\n';
+    } 
+  } catch (std::invalid_argument const &ex) {
+    std::cerr << "Invalid number: " << num << '\n';
+  } catch (std::out_of_range const &ex) {
+    std::cerr << "Number out of range: " << num << '\n';
+  }
+
+  num = argv[2];
+  long long nt; 
+  try {
+    std::size_t pos;
+    nt = std::stoll(num, &pos);
+    // check if input is mix of numbers and chars
+    // 1zz converts to 1
+    if (pos < num.size()) {
+      std::cerr << "Trailing characters after number: " << num << '\n';
+    }
+  } catch (std::invalid_argument const &ex) {
+    std::cerr << "Invalid number: " << num << '\n';
+  } catch (std::out_of_range const &ex) {
+    std::cerr << "Number out of range: " << num << '\n';
+  }
+
   const std::string fileName = "robin_fuselage.obj";
   const double fusBegin = 0.0;
   const double fusEnd = 2.0;
