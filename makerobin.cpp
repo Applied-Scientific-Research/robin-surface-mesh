@@ -122,6 +122,27 @@ void create_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, s
   file.close();
 }
 
+long long input_check(std::string num) {
+  long long n;
+  try {
+    std::size_t pos;
+    n = std::stoll(num, &pos);
+    // check if input is mix of numbers and chars
+    // 1zz converts to 1
+    if (pos < num.size()) {
+      std::cerr << "Trailing characters after number: " << num << '\n';
+      std::cerr << "Using: " << n << std::endl;
+    } 
+  } catch (std::invalid_argument const &ex) {
+    std::cerr << "Invalid number: " << num << '\n';
+    exit(0);
+  } catch (std::out_of_range const &ex) {
+    std::cerr << "Number out of range: " << num << '\n';
+    exit(0);
+  }
+  return n;
+}
+
 // execution starts here
 int main(int argc, char const *argv[]) {
   std::cout << "Generating ROBIN model" << std::endl;
@@ -129,30 +150,30 @@ int main(int argc, char const *argv[]) {
   // first 4 rows of each section are the fuselage
   // next 2 more rows each for the pylon
   // These are the origional coefficients from the paper
-  //std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, 0.0, 0.25, 1.8},
-  //                               {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
-  //                               {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
-  //                               {1.0, -1.0, -0.8, 0.4, 3.0, 0.0, 0.145, 3.0},
-  //                               {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.145, 2.0} };
-  //std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, 0.4, 2.0, 0.0, 0.25, 2.0},
-  //                               {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
-  //                               {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
-  //                               {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.166, 3.0},
-  //                               {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.166, 2.0} };
-  //std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, -0.08, 0.08, 1.8},
-  //                               {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
-  //                               {0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {0.125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.065, 0.06, 0.6} };
-  //std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
-  //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 0.0, 0.0},
-  //                               {2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} };
+  // std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, 0.0, 0.25, 1.8},
+  //                                {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                                {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
+  //                                {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
+  //                                {1.0, -1.0, -0.8, 0.4, 3.0, 0.0, 0.145, 3.0},
+  //                                {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.145, 2.0} };
+  // std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, 0.4, 2.0, 0.0, 0.25, 2.0},
+  //                                {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                                {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
+  //                                {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
+  //                                {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.166, 3.0},
+  //                                {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.166, 2.0} };
+  // std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, -0.08, 0.08, 1.8},
+  //                                {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                                {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
+  //                                {0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                                {0.125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                                {1.0, -1.0, -0.8, 1.1, 1.5, 0.065, 0.06, 0.6} };
+  // std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
+  //                                {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                                {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 0.0, 0.0},
+  //                                {2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                                {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                                {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} };
   // fixes:
   // 1) if there's a 0.0 in the second col, then change the 4th and 5th cols to 1.0
   // 2) if there's a 0.0 in C7, change C8 to 1.0, same as above, to prevent nan/inf
@@ -188,44 +209,17 @@ int main(int argc, char const *argv[]) {
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0} };
 
   // Read in command line inputs
-  if (argc != 4) {
-    std::cerr << "Incorrect number of arguments: " << argc << std::endl;
+  if (argc != 5) {
+    std::cerr << "Incorrect number of arguments: " << argc-1 << std::endl;
     std::cout << "Argument order is [nx fuselage] [nt fuselage] [nx pylon] [nt pylon]\n";
     exit(0);
   }
-  std::string num = argv[1];
-  long long nx;
-  try {
-    std::size_t pos;
-    nx = std::stoll(num, &pos);
-    // check if input is mix of numbers and chars
-    // 1zz converts to 1
-    if (pos < num.size()) {
-      std::cerr << "Trailing characters after number: " << num << '\n';
-    } 
-  } catch (std::invalid_argument const &ex) {
-    std::cerr << "Invalid number: " << num << '\n';
-  } catch (std::out_of_range const &ex) {
-    std::cerr << "Number out of range: " << num << '\n';
-  }
-
-  num = argv[2];
-  long long nt; 
-  try {
-    std::size_t pos;
-    nt = std::stoll(num, &pos);
-    // check if input is mix of numbers and chars
-    // 1zz converts to 1
-    if (pos < num.size()) {
-      std::cerr << "Trailing characters after number: " << num << '\n';
-    }
-  } catch (std::invalid_argument const &ex) {
-    std::cerr << "Invalid number: " << num << '\n';
-  } catch (std::out_of_range const &ex) {
-    std::cerr << "Number out of range: " << num << '\n';
-  }
-
-  const std::string fileName = "robin_fuselage.obj";
+  const long long fnx = input_check((std::string)argv[1]);
+  const long long fnt = input_check((std::string)argv[2]);
+  const long long pnx = input_check((std::string)argv[3]);
+  const long long pnt = input_check((std::string)argv[4]);
+ 
+  const std::string fileName = "robin_fuselage.obj"; 
   const double fusBegin = 0.0;
   const double fusEnd = 2.0;
   const std::string pFileName = "robin_pylon.obj";
@@ -233,10 +227,10 @@ int main(int argc, char const *argv[]) {
   const double pylEnd = 1.018;
 
   std::cout << "Createing Fuselage Mesh" << std::endl;
-  create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, fileName, get_fuselage_section, fusBegin, fusEnd);
+  create_mesh(fnx, fnt, hcoeff, wcoeff, zcoeff, ncoeff, fileName, get_fuselage_section, fusBegin, fusEnd);
 
   std::cout << "Createing Pylon Mesh" << std::endl;
-  create_mesh(nx*0.36, nt*0.6, hcoeff, wcoeff, zcoeff, ncoeff, pFileName, get_pylon_section, pylBegin, pylEnd);
+  create_mesh(pnx, pnt, hcoeff, wcoeff, zcoeff, ncoeff, pFileName, get_pylon_section, pylBegin, pylEnd);
  
   // CSG these two meshes together 
   return 0;
