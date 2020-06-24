@@ -2,6 +2,9 @@
  * makerobin.cpp - generate the ROBIN helicopter body model
  *
  * g++ -o makerobin makerobin.cpp -lm
+ * Stores mesh in 2 .obj files:
+ *   robin_fuselage
+ *   robin_pylon
  */
 
 #include <cstdlib>
@@ -32,30 +35,7 @@ int get_pylon_section (const double x) {
 using SupEll = std::array<double, 8>;
 
 double getsuperval (const double x, const SupEll& c) {
-  //std::cout << "se is " << c[0] << " " << c[1] << " " << c[2] << " " << c[3] << " " << c[4] << " " << c[5] << " " << c[6] << " " << c[7] << std::endl;
-  //std::cout << "comps are " << ((x+c[2])/c[3]) << " " << c[4] << std::endl;
-  double tmp = x+c[2];
-  //std::cout << "x+c3=" << tmp;
-  tmp = tmp/c[3];
-  //std::cout << " /c4=" << tmp;
-  tmp = std::pow(tmp, c[4]);
-  //std::cout << " ^c5=" << tmp;
-  tmp = tmp*c[1];
-  //std::cout << " *c2=" << tmp;
-  tmp = tmp+c[0];
-  //std::cout << " +c1=" << tmp;
-  tmp = std::pow(tmp, 1.0/c[7]);
-  //std::cout << "^(1/c8)=" << tmp;
-  tmp = tmp*c[6];
-  //std::cout << " *c7=" << tmp;
-  tmp = tmp + c[5];
-  //std::cout << " +c6=" << tmp << std::endl;
   return c[5] + c[6]*std::pow(std::max(0.0,c[0]+c[1]*std::pow((x+c[2])/c[3], c[4])), 1.0/c[7]);	// nan
-  //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], c[4]), 1./c[7]);	// nan
-  //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], c[4]), 1./2.0);	// nan
-  //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], 2.0), 1./c[7]);	// fine
-  //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x-c[2])/c[3], 1.8), 1./c[7]);		// fine
-  //return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], 2.0), 1./2.0);	// fine
 }
 
 double getRadialCoord(double H, double W, double theta, double N) {
@@ -63,7 +43,6 @@ double getRadialCoord(double H, double W, double theta, double N) {
   // Note the new std::abs - this is to ensure that values are positive, we really only compute one quadrant
   double denom = std::pow(0.5*H*std::abs(std::sin(theta)), N) + std::pow(0.5*W*std::abs(std::cos(theta)), N);
   if (!denom) { denom = 1;}
-  //std::cout << "Numer=" << numer << " Denom=" << denom << " R=" << (numer / std::pow(denom, 1.0/N)) << std::endl;
   return numer / std::pow(denom, 1.0/N); 
 }
 
@@ -85,34 +64,26 @@ void create_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, s
   for (size_t ix=0; ix<nx+1; ix++) {
     
     const double xol = chebeshev_node(xBegin, xEnd, ix, nx);
-    //const double xol = ((xEnd - xBegin) * ix / (double)nx) + xBegin;
     const int sec = getSection(xol);
     if (sec == -1) {
       std::cout << "ERROR: sec == " << sec << " x == " << xol << std::endl;
       exit(0);
     }
-    //std::cout << "x index=" << ix << " with xol=" << xol << " uses station=" << sec << std::endl;
 
     // compute H, W, Z0, and N from xol and the constants
-    //std::cout << "H:" << std::endl;
     const double H  = getsuperval(xol, hcoeff[sec]);
-    //std::cout << "W:" << std::endl;
     const double W  = getsuperval(xol, wcoeff[sec]);
-    //std::cout << "Z:" << std::endl;
     const double Z0 = getsuperval(xol, zcoeff[sec]);
-    //std::cout << "N:" << std::endl;
     const double N  = getsuperval(xol, ncoeff[sec]);
-    //std::cout << "at xol=" << xol << " have " << H << " " << W << " " << Z0 << " " << N << std::endl;
 
     for (size_t it=0; it<nt; it++) {
       const double theta = 2.0*pi*it/(double)nt;
       // compute r from H, W, N, theta
       const double r = getRadialCoord(H, W, theta, N);
       // compute yol, zol from r, theta, Z0
-      //std::cout << "r: " << r << std::endl;
       const double yol = r * std::sin(theta);
       const double zol = r * std::cos(theta) + Z0;
-      std::cout /*<< r << "  " */<< xol << " " << yol << " " << zol << std::endl;
+      std::cout << xol << " " << yol << " " << zol << std::endl;
       
       // Write vertex to file
       file << "v " << xol << " " << yol << " " << zol << "\n";
@@ -156,20 +127,38 @@ int main(int argc, char const *argv[]) {
   std::cout << "Generating ROBIN model" << std::endl;
 
   // first 4 rows of each section are the fuselage
-  //   next 2 more rows each for the pylon
-
-  // fixes:
-  // 1) if there's a 0.0 in the second col, then change the 4th and 5th cols to 1.0
-  // 2) if there's a 0.0 in C7, change C8 to 1.0, same as above, to prevent nan/inf
-  // 3) the 0.4..0.8 section (row 2) coefficients in C1 needed to go into C6
-  // 4) C4 is wrong in the first section of fuse and pyl - it needed to be negative
-
+  // next 2 more rows each for the pylon
+  // These are the origional coefficients from the paper
   //std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, 0.0, 0.25, 1.8},
   //                               {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
   //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
   //                               {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
   //                               {1.0, -1.0, -0.8, 0.4, 3.0, 0.0, 0.145, 3.0},
   //                               {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.145, 2.0} };
+  //std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, 0.4, 2.0, 0.0, 0.25, 2.0},
+  //                               {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
+  //                               {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
+  //                               {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.166, 3.0},
+  //                               {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.166, 2.0} };
+  //std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, -0.08, 0.08, 1.8},
+  //                               {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
+  //                               {0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {0.125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.065, 0.06, 0.6} };
+  //std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
+  //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 0.0, 0.0},
+  //                               {2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+  //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} };
+  // fixes:
+  // 1) if there's a 0.0 in the second col, then change the 4th and 5th cols to 1.0
+  // 2) if there's a 0.0 in C7, change C8 to 1.0, same as above, to prevent nan/inf
+  // 3) the 0.4..0.8 section (row 2) coefficients in C1 needed to go into C6
+  // 4) C4 is wrong in the first section of fuse and pyl - it needed to be negative
+
   std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, -0.4, 1.8, 0.0, 0.25, 1.8},
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 0.25, 0.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
@@ -177,12 +166,6 @@ int main(int argc, char const *argv[]) {
                                  {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.145, 3.0},
                                  {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.145, 2.0} };
 
-  //std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, 0.4, 2.0, 0.0, 0.25, 2.0},
-  //                               {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
-  //                               {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
-  //                               {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.166, 3.0},
-  //                               {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.166, 2.0} };
   std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, -0.4, 2.0, 0.0, 0.25, 2.0},
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 0.25, 0.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
@@ -190,12 +173,6 @@ int main(int argc, char const *argv[]) {
                                  {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.166, 3.0},
                                  {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.166, 2.0} };
 
-  //std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, -0.08, 0.08, 1.8},
-  //                               {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
-  //                               {0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {0.125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {1.0, -1.0, -0.8, 1.1, 1.5, 0.065, 0.06, 0.6} };
   std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, -0.4, 1.8, -0.08, 0.08, 1.8},
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
@@ -203,12 +180,6 @@ int main(int argc, char const *argv[]) {
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 0.125, 0.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.065, 0.06, 0.6} };
 
-  //std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
-  //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 0.0, 0.0},
-  //                               {2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-  //                               {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} };
   std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0},
                                  {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 1.0, 1.0},
