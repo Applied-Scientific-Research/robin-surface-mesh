@@ -67,6 +67,11 @@ double getRadialCoord(double H, double W, double theta, double N) {
   return numer / std::pow(denom, 1.0/N); 
 }
 
+double chebeshev_node(double a, double b, double k, double n) {
+  const double pi = 3.14159265358979;
+  return (a+b)*0.5+(b-a)*0.5*cos((2*(n-k)-1)*pi*0.5/n);
+}
+
 void create_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, std::vector<SupEll> wcoeff,
                  std::vector<SupEll> zcoeff, std::vector<SupEll> ncoeff, const std::string fileName,
                  int (*getSection)(double), const double xBegin, const double xEnd) {
@@ -76,29 +81,31 @@ void create_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, s
   file << "# Vertices\n";
 
   std::cout << std::endl << "Generating Nodes" << std::endl << std::endl;
+  const double pi = 3.14159265358979;
   for (size_t ix=0; ix<nx+1; ix++) {
     
-    const double xol = ((xEnd - xBegin) * ix / (double)nx) + xBegin;
-    const int fusSec = getSection(xol);
-    if (fusSec == -1) {
-      std::cout << "ERROR: fusSec == " << fusSec << " x == " << xol << std::endl;
+    const double xol = chebeshev_node(xBegin, xEnd, ix, nx);
+    //const double xol = ((xEnd - xBegin) * ix / (double)nx) + xBegin;
+    const int sec = getSection(xol);
+    if (sec == -1) {
+      std::cout << "ERROR: sec == " << sec << " x == " << xol << std::endl;
       exit(0);
     }
-    //std::cout << "x index=" << ix << " with xol=" << xol << " uses station=" << fusSec << std::endl;
+    //std::cout << "x index=" << ix << " with xol=" << xol << " uses station=" << sec << std::endl;
 
     // compute H, W, Z0, and N from xol and the constants
     //std::cout << "H:" << std::endl;
-    const double H  = getsuperval(xol, hcoeff[fusSec]);
+    const double H  = getsuperval(xol, hcoeff[sec]);
     //std::cout << "W:" << std::endl;
-    const double W  = getsuperval(xol, wcoeff[fusSec]);
+    const double W  = getsuperval(xol, wcoeff[sec]);
     //std::cout << "Z:" << std::endl;
-    const double Z0 = getsuperval(xol, zcoeff[fusSec]);
+    const double Z0 = getsuperval(xol, zcoeff[sec]);
     //std::cout << "N:" << std::endl;
-    const double N  = getsuperval(xol, ncoeff[fusSec]);
+    const double N  = getsuperval(xol, ncoeff[sec]);
     //std::cout << "at xol=" << xol << " have " << H << " " << W << " " << Z0 << " " << N << std::endl;
 
     for (size_t it=0; it<nt; it++) {
-      const double theta = 2.0*3.14159265358979*it/(double)nt;
+      const double theta = 2.0*pi*it/(double)nt;
       // compute r from H, W, N, theta
       const double r = getRadialCoord(H, W, theta, N);
       // compute yol, zol from r, theta, Z0
@@ -253,7 +260,7 @@ int main(int argc, char const *argv[]) {
   create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, fileName, get_fuselage_section, fusBegin, fusEnd);
 
   std::cout << "Createing Pylon Mesh" << std::endl;
-  create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, pFileName, get_pylon_section, pylBegin, pylEnd);
+  create_mesh(nx*0.75, nt, hcoeff, wcoeff, zcoeff, ncoeff, pFileName, get_pylon_section, pylBegin, pylEnd);
  
   // CSG these two meshes together 
   return 0;
