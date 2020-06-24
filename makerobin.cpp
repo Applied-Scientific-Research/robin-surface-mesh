@@ -187,7 +187,7 @@ int main(int argc, char const *argv[]) {
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 0.25, 0.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
                                  {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
-                                 {1.0, -1.0, -0.8, 0.4, 3.0, 0.0, 0.166, 3.0},
+                                 {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.166, 3.0},
                                  {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.166, 2.0} };
 
   //std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, -0.08, 0.08, 1.8},
@@ -260,7 +260,7 @@ int main(int argc, char const *argv[]) {
   create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, fileName, get_fuselage_section, fusBegin, fusEnd);
 
   std::cout << "Createing Pylon Mesh" << std::endl;
-  create_mesh(nx*0.75, nt, hcoeff, wcoeff, zcoeff, ncoeff, pFileName, get_pylon_section, pylBegin, pylEnd);
+  create_mesh(nx*0.36, nt*0.6, hcoeff, wcoeff, zcoeff, ncoeff, pFileName, get_pylon_section, pylBegin, pylEnd);
  
   // CSG these two meshes together 
   return 0;
