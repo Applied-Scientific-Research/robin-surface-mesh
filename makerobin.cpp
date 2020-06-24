@@ -112,6 +112,35 @@ void create_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, s
       if ((ix == 0) || (ix == nx)) { break; }
     }
   }
+  
+  // Label faces
+  file << "\n# Faces\n";
+  for (size_t i=2; i<nt+1; i++) {
+    file << "f " << 1 << " " << i << " " << i+1 << "\n";
+  }
+  file << "f " << 1 << " " << nt+1 << " " << 2 << "\n";
+
+  // Link the two rings together to make faces
+  for (size_t r=0; r<nx-2; r++) {
+    // node indices for rings 1 and 2
+    const size_t ir1 = nt*r + 2;
+    const size_t ir2 = nt*(r+1) + 2;
+
+    // Runs through all nodes in the ring
+    for (size_t n=0; n<nt-1; n++) {
+      file << "f " << ir1+n << " " << ir2+n << " " << ir1+n+1 << "\n";
+      file << "f " << ir2+n << " " << ir2+n+1 << " " << ir1+n+1 << "\n";
+    }
+    file << "f " << ir1+nt-1 << " " << ir2+nt-1 << " " << ir1 << "\n";
+    file << "f " << ir2+nt-1 << " " << ir2 << " " << ir1 << "\n";
+  }
+
+  size_t lastVert = nt*(nx-1)+2;
+  for (size_t i=2; i<nt+1; i++) {
+    file << "f " << (i+1)+nt*(nx-2) << " " << i+nt*(nx-2) << " " << lastVert << "\n";
+  }
+  file << "f " << 2+nt*(nx-2) << " " << lastVert-1 << " " << lastVert << "\n";
+  // Done writing faces
   file.close();
 }
 
@@ -181,8 +210,8 @@ int main(int argc, char const *argv[]) {
                                  {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0} };
 
   //double tx[3] = {0.5, 0.5, 0.5};
-  const size_t nx = 10;
-  const size_t nt = 10;
+  const size_t nx = 40;
+  const size_t nt = 40;
   const std::string fileName = "robin_fuselage.obj";
   const double fusBegin = 0.0;
   const double fusEnd = 2.0;
@@ -192,41 +221,10 @@ int main(int argc, char const *argv[]) {
 
   std::cout << "Createing Fuselage Mesh" << std::endl;
   create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, fileName, get_fuselage_section, fusBegin, fusEnd);
-  // generate a second closed tri mesh for the pylon, then CSG them together
-
-  // Label faces
-  std::ofstream file;
-  file.open(fileName, std::ios_base::app);
-  file << "\n# Faces\n";
-  for (size_t i=2; i<nt+1; i++) {
-    file << "f " << 1 << " " << i << " " << i+1 << "\n";
-  }
-  file << "f " << 1 << " " << nt+1 << " " << 2 << "\n";
-
-  // Link the two rings together to make faces
-  for (size_t r=0; r<nx-2; r++) {
-    // node indices for rings 1 and 2
-    const size_t ir1 = nt*r + 2;
-    const size_t ir2 = nt*(r+1) + 2;
-
-    // Runs through all nodes in the ring
-    for (size_t n=0; n<nt-1; n++) {
-      file << "f " << ir1+n << " " << ir2+n << " " << ir1+n+1 << "\n";
-      file << "f " << ir2+n << " " << ir2+n+1 << " " << ir1+n+1 << "\n";
-    }
-    file << "f " << ir1+nt-1 << " " << ir2+nt-1 << " " << ir1 << "\n";
-    file << "f " << ir2+nt-1 << " " << ir2 << " " << ir1 << "\n";
-  }
-
-  size_t lastVert = nt*(nx-1)+2;
-  for (size_t i=2; i<nt+1; i++) {
-    file << "f " << (i+1)+nt*(nx-2) << " " << i+nt*(nx-2) << " " << lastVert << "\n";
-  }
-  file << "f " << 2+nt*(nx-2) << " " << lastVert-1 << " " << lastVert << "\n";
-  // Done writing faces
-  file.close();
 
   std::cout << "Createing Pylon Mesh" << std::endl;
   create_mesh(nx, nt, hcoeff, wcoeff, zcoeff, ncoeff, pFileName, get_pylon_section, pylBegin, pylEnd);
+ 
+  // CSG these two meshes together 
   return 0;
 }
