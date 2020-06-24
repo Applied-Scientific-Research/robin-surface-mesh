@@ -51,9 +51,35 @@ double chebeshev_node(double a, double b, double k, double n) {
   return (a+b)*0.5+(b-a)*0.5*cos((2*(n-k)-1)*pi*0.5/n);
 }
 
-void create_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, std::vector<SupEll> wcoeff,
-                 std::vector<SupEll> zcoeff, std::vector<SupEll> ncoeff, const std::string fileName,
-                 int (*getSection)(double), const double xBegin, const double xEnd) {
+void create_vertices(const size_t nx, const size_t nt, const std::string fileName,
+                     int (*getSection)(double), const double xBegin, const double xEnd) {
+  std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, -0.4, 1.8, 0.0, 0.25, 1.8},
+                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.25, 0.0, 1.0},
+                                 {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
+                                 {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
+                                 {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.145, 3.0},
+                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.145, 2.0} };
+
+  std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, -0.4, 2.0, 0.0, 0.25, 2.0},
+                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.25, 0.0, 1.0},
+                                 {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
+                                 {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
+                                 {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.166, 3.0},
+                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.166, 2.0} };
+
+  std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, -0.4, 1.8, -0.08, 0.08, 1.8},
+                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0},
+                                 {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
+                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.04, 0.0, 1.0},
+                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.125, 0.0, 1.0},
+                                 {1.0, -1.0, -0.8, 1.1, 1.5, 0.065, 0.06, 0.6} };
+
+  std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
+                                 {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0},
+                                 {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 1.0, 1.0},
+                                 {0.0, 0.0, 0.0, 1.0, 0.0, 2.0, 0.0, 1.0},
+                                 {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0},
+                                 {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0} };
   // Open file to write to
   std::ofstream file;
   file.open(fileName);
@@ -90,7 +116,12 @@ void create_mesh(const size_t nx, const size_t nt, std::vector<SupEll> hcoeff, s
       if ((ix == 0) || (ix == nx)) { break; }
     }
   }
-  
+  file.close();
+}
+
+void create_faces(const std::string fileName, const size_t nx, const size_t nt) {
+  std::ofstream file;
+  file.open(fileName, std::ios_base::app);
   // Label faces
   file << "\n# Faces\n";
   for (size_t i=2; i<nt+1; i++) {
@@ -179,39 +210,13 @@ int main(int argc, char const *argv[]) {
   // 2) if there's a 0.0 in C7, change C8 to 1.0, same as above, to prevent nan/inf
   // 3) the 0.4..0.8 section (row 2) coefficients in C1 needed to go into C6
   // 4) C4 is wrong in the first section of fuse and pyl - it needed to be negative
-
-  std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, -0.4, 1.8, 0.0, 0.25, 1.8},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.25, 0.0, 1.0},
-                                 {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
-                                 {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
-                                 {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.145, 3.0},
-                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.145, 2.0} };
-
-  std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, -0.4, 2.0, 0.0, 0.25, 2.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.25, 0.0, 1.0},
-                                 {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
-                                 {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
-                                 {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.166, 3.0},
-                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.166, 2.0} };
-
-  std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, -0.4, 1.8, -0.08, 0.08, 1.8},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0},
-                                 {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.04, 0.0, 1.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.125, 0.0, 1.0},
-                                 {1.0, -1.0, -0.8, 1.1, 1.5, 0.065, 0.06, 0.6} };
-
-  std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0},
-                                 {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 1.0, 1.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 2.0, 0.0, 1.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0} };
+  //
+  // Actual coefficients are in create_vertices
 
   // Read in command line inputs
   if (argc != 5) {
     std::cerr << "Incorrect number of arguments: " << argc-1 << std::endl;
-    std::cout << "Argument order is [nx fuselage] [nt fuselage] [nx pylon] [nt pylon]\n";
+    std::cerr << "Argument order is [nx fuselage] [nt fuselage] [nx pylon] [nt pylon]\n";
     exit(0);
   }
   const long long fnx = input_check((std::string)argv[1]);
@@ -227,11 +232,11 @@ int main(int argc, char const *argv[]) {
   const double pylEnd = 1.018;
 
   std::cout << "Createing Fuselage Mesh" << std::endl;
-  create_mesh(fnx, fnt, hcoeff, wcoeff, zcoeff, ncoeff, fileName, get_fuselage_section, fusBegin, fusEnd);
-
+  create_vertices(fnx, fnt, fileName, get_fuselage_section, fusBegin, fusEnd);
+  create_faces(fileName, fnx, fnt);
   std::cout << "Createing Pylon Mesh" << std::endl;
-  create_mesh(pnx, pnt, hcoeff, wcoeff, zcoeff, ncoeff, pFileName, get_pylon_section, pylBegin, pylEnd);
- 
+  create_vertices(pnx, pnt, pFileName, get_pylon_section, pylBegin, pylEnd);
+  create_faces(pFileName, pnx, pnt);
   // CSG these two meshes together 
   return 0;
 }
