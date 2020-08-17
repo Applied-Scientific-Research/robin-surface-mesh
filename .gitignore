@@ -33,4 +33,10 @@
 *.bin
 makerobin
 
+# latex
+*.log
+*.bbl
+*.aux
+*.blg
+
 *.pdf

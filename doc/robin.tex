@@ -1,0 +1,65 @@
+\documentclass[12pt]{article}
+\usepackage[dvips]{graphicx}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{natbib}
+\usepackage{latexsym}
+% more closely-positioned figures
+\renewcommand{\topfraction}{0.75}
+\renewcommand{\bottomfraction}{0.5}
+\renewcommand{\textfraction}{0.25}
+\renewcommand{\floatpagefraction}{0.75}
+ %
+\title{Robust and Corrected Coefficients for the ROBIN Body}
+ %
+\author{Mark J.~Stock and Blake B.~Hillier\\
+        Applied Scientific Research, Inc.
+        Irvine, CA\\
+        \texttt{markjstock@gmail.com}, \texttt{blakehillier@mac.com}
+}
+\begin{document}
+\maketitle
+%\begin{abstract}
+%\end{abstract}
+
+% --------------------------------------------------------------------------
+
+\abstract{
+The ROBIN body is a VTOL fuselage shape originally introduced in ?? which is defined
+by the intersection of two sets of quadratic surfaces.
+While the shape is used frequently in research, the coefficients, where published,
+do not reliably produce the geometry. This letter serves as a notice of the 
+correct coefficients and a public repository for their distribution.
+}
+
+% --------------------------------------------------------------------------
+\section{Introduction}
+Background
+
+Here is a table that we may recreate in the letter?
+
+\begin{figure} \begin{centering}
+\begin{small}
+\begin{tabular}{cccccccccc}
+$\Delta_t$ & solver & $N_p$ & $t_{total}$ (s) & $L_2$ field & 0th & 1st & 2nd & 3rd & 4th \\
+\hline
+0.1 & nnls & 74 & 0.0010 & 0.0218 & 8.88e-16 & 5.33e-10 & 6.40e-10 & 0.0135 & 0.0528 \\
+\hline
+0.01 & nnls & 1240 & 0.14 & 0.0428 & 2.11e-15 & 7.59e-09 & 2.81e-07 & 0.00615 & 0.0110 \\
+\hline
+0.001 & nnls & 10310 & 31 & 0.0427 & 1.22e-14 & 1.39e-08 & 3.31e-06 & 0.000586 & 0.000534 \\
+\end{tabular}
+%\vspace{0.1in}
+\caption{Here are some irrelevant numbers. }
+\label{solverres}
+\end{small}
+\end{centering}\end{figure}%
+
+Here is a basic citation \cite{stock11a}. And here's another \cite{robinsurfmesh}.
+
+
+% --------------------------------------------------------------------------
+\bibliographystyle{plainnat}
+\bibliography{robinbib}
+\end{document}
+%%
