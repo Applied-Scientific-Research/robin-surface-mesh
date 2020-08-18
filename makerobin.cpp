@@ -47,8 +47,14 @@ double getRadialCoord(double H, double W, double theta, double N) {
 }
 
 double chebeshev_node(double a, double b, double k, double n) {
-  const double pi = 3.14159265358979;
-  return (a+b)*0.5+(b-a)*0.5*cos((2*(n-k)-1)*pi*0.5/n);
+  if (k == 0) {
+    return a;
+  } else if (k==n) {
+    return b;
+  } else {
+    const double pi = 3.14159265358979;
+    return (a+b)*0.5+(b-a)*0.5*std::cos((2*(n-k)-1)*pi*0.5/n);
+  }
 }
 
 void create_vertices(const size_t nx, const size_t nt, const std::string fileName,
