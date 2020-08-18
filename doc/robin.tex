@@ -30,20 +30,28 @@ which is defined by the intersection of two sets of superellipse equations.
 While the shape is used frequently in rotorcraft aerodynamics research, the coefficients,
 where published, do not reliably produce the desired geometry.
 This letter serves as a notice of the correct coefficients and a public repository
-for their distribution.
+for their distribution \cite{robinsurfmesh}.
 }
 
 % --------------------------------------------------------------------------
-\section{Introduction}
-Background
+\section{Proposed changes}
+In order to facilitate correct computation of the ROBIN body, certain changes to the
+widely-published coefficients had to be made. These changes are as follows.
+\begin{itemize}
+\item Certain denominators $C_{4}$ had the wrong sign and created incorrect results.
+\item The denominator in the outermost exponent ($C_{8}$) is zero in many places. Even though
+those formulae do not need to evaluate the contents of the base (because $C_{7}$ is also zero),
+these exponents should not throw NaN if evaluated.
+\item Where $C_{2}=0$ there is no need to evaluate the following expression, but to allow
+for generality, we set $C_{4}=1$ to prevent division by zero.
+\end{itemize}
 
-Here is a basic citation to the github project \cite{robinsurfmesh}.
 
-Here is the function:
+The superellipse function, in its most common form, is as follows.
 \begin{equation}
   F(x) = C_{6}+C_{7}\left[C_{1}+C_{2}\left(\frac{x+C_{3}}{C_{4}}\right)^{C_{5}}\right]^{\frac{1}{C_{8}}}
 \end{equation}
-Here is the table of correct coefficients:
+Figures 1 and 2 tabulate the new, correct coefficients.
 \begin{figure} \begin{centering}
 \begin{small}
 \begin{tabular}{cccccccccc}
@@ -61,7 +69,7 @@ N           &                 & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & 
 \hline
 H          & [0.8, 1.9]  & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2             & 0.6 \\
 W.         &                 & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2             & 0.6 \\
-$Z_{0}$ &                 & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.04 & -0.04.        & 0.6 \\
+$Z_{0}$ &                 & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.04 & -0.04        & 0.6 \\
 N           &                 & 5.0 & -3.0 & -0.8 & 1.1 & 1.0 & 0.0   & \textbf{1.0} & \textbf{1.0} \\
 \hline
 H          & [1.9, 2.0]  & 1.0             & -1.0 & \textbf{-0.8} & \textbf{1.1} & \textbf{1.5} & \textbf{0.05} & \textbf{0.2} & \textbf{0.6} \\
