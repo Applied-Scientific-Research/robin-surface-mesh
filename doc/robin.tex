@@ -25,7 +25,7 @@
 % --------------------------------------------------------------------------
 
 \abstract{
-The ROBIN body is a VTOL fuselage shape (\cite{nasa87762,mineckgorton,nasa80051,nasa1999})
+The ROBIN body is a VTOL fuselage shape \cite{nasa87762,mineckgorton,nasa80051,nasa1999}
 which is defined by the intersection of two sets of superellipse equations.
 While the shape is used frequently in rotorcraft aerodynamics research, the coefficients,
 where published, do not reliably produce the desired geometry.
@@ -39,24 +39,7 @@ Background
 
 Here is a table that we may recreate in the letter.
 
-\begin{figure} \begin{centering}
-\begin{small}
-\begin{tabular}{cccccccccc}
-$\Delta_t$ & solver & $N_p$ & $t_{total}$ (s) & $L_2$ field & 0th & 1st & 2nd & 3rd & 4th \\
-\hline
-0.1 & nnls & 74 & 0.0010 & 0.0218 & 8.88e-16 & 5.33e-10 & 6.40e-10 & 0.0135 & 0.0528 \\
-\hline
-0.01 & nnls & 1240 & 0.14 & 0.0428 & 2.11e-15 & 7.59e-09 & 2.81e-07 & 0.00615 & 0.0110 \\
-\hline
-0.001 & nnls & 10310 & 31 & 0.0427 & 1.22e-14 & 1.39e-08 & 3.31e-06 & 0.000586 & 0.000534 \\
-\end{tabular}
-%\vspace{0.1in}
-\caption{Here are some irrelevant numbers. }
-\label{solverres}
-\end{small}
-\end{centering}\end{figure}%
-
-Here is a basic citation to the github project (\cite{robinsurfmesh}).
+Here is a basic citation to the github project \cite{robinsurfmesh}.
 
 Here is the table of correct coefficients:
 \begin{figure} \begin{centering}
@@ -64,22 +47,22 @@ Here is the table of correct coefficients:
 \begin{tabular}{cccccccccc}
 Function & X/R & $C_{1}$ & $C_{2}$ & $C_{3}$ & $C_{4}$ & $C_{5}$ & $C_{6}$ & $C_{7}$ & $C_{8}$ \\
 \hline
-H          & (0.0, 0.4)  & 1.0 & -1.0 & -0.4 & \textbf{-0.4} & 1.8 & 0.0    & 0.25 & 1.8 \\
+H          & [0.0, 0.4]  & 1.0 & -1.0 & -0.4 & \textbf{-0.4} & 1.8 & 0.0    & 0.25 & 1.8 \\
 W          &                 & 1.0 & -1.0 & -0.4 & \textbf{-0.4} & 2.0 & 0.0    & 0.25 & 2.0 \\
 $Z_{0}$ &                 & 1.0 & -1.0 & -0.4 & \textbf{-0.4} & 1.8 & -0.08 & 0.08 & 1.8 \\
 N           &                 & 2.0 & 3.0  & 0.0  &              0.4  & 1.0 & 0.0    & 1.0   & 1.0 \\
 \hline
-H          & (0.4, 0.8)  & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{0.25} & 0.0 & \textbf{1.0} \\
+H          & [0.4, 0.8]  & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{0.25} & 0.0 & \textbf{1.0} \\
 W          &                 & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{0.25} & 0.0 & \textbf{1.0} \\
 $Z_{0}$ &                 & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & 0.0               & 0.0 & \textbf{1.0} \\
 N           &                 & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{5.0}   & 0.0 & \textbf{1.0} \\
 \hline
-H          & (0.8, 1.9)  & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2             & 0.6 \\
+H          & [0.8, 1.9]  & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2             & 0.6 \\
 W.         &                 & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2             & 0.6 \\
 $Z_{0}$ &                 & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.04 & -0.04.        & 0.6 \\
 N           &                 & 5.0 & -3.0 & -0.8 & 1.1 & 1.0 & 0.0   & \textbf{1.0} & \textbf{1.0} \\
 \hline
-H          & (1.9, 2.0)  & 1.0             & -1.0 & \textbf{-0.8} & \textbf{1.1} & \textbf{1.5} & \textbf{0.05} & \textbf{0.2} & \textbf{0.6} \\
+H          & [1.9, 2.0]  & 1.0             & -1.0 & \textbf{-0.8} & \textbf{1.1} & \textbf{1.5} & \textbf{0.05} & \textbf{0.2} & \textbf{0.6} \\
 W          &                 & 1.0             & -1.0 &             -1.9 &             0.1 &             2.0 &             0.0   & 0.05           & 2.0 \\
 $Z_{0}$ &                 & \textbf{0.0} & 0.0  &             0.0  & \textbf{1.0} &             0.0 & \textbf{0.04} & 0.0             & \textbf{1.0} \\
 N           &                 & \textbf{0.0} & 0.0  &             0.0  & \textbf{1.0} &             0.0 & \textbf{2.0}   & 0.0             & \textbf{1.0} \\
@@ -95,12 +78,12 @@ N           &                 & \textbf{0.0} & 0.0  &             0.0  & \textbf
 \begin{tabular}{cccccccccc}
 Function & X/R & $C_{1}$ & $C_{2}$ & $C_{3}$ & $C_{4}$ & $C_{5}$ & $C_{6}$ & $C_{7}$ & $C_{8}$ \\
 \hline
-H          & (0.4, 0.8)  & 1.0             & -1.0 & -0.8 & \textbf{-0.4} & 3.0 & 0.0                  & \textbf{0.145} & 3.0 \\
+H          & [0.4, 0.8]  & 1.0             & -1.0 & -0.8 & \textbf{-0.4} & 3.0 & 0.0                  & \textbf{0.145} & 3.0 \\
 W          &                 & 1.0             & -1.0 & -0.8 & \textbf{-0.4} & 3.0 & 0.0                  & \textbf{0.166} & 3.0 \\
 $Z_{0}$ &                 & \textbf{0.0} & 0.0  & 0.0  & \textbf{1.0}  & 0.0  & \textbf{0.125} & 0.0                 & \textbf{1.0} \\
 N           &                 & \textbf{0.0} & 0.0  & 0.0  & \textbf{1.0}  & 0.0  & \textbf{5.0}     & 0.0                 & \textbf{1.0} \\
 \hline
-H          & (0.8, 1.018)  & 1.0             & -1.0 & -0.8 & 0.218         & 2.0 & 0.0                 & \textbf{0.145} & 2.0 \\
+H          & [0.8, 1.018]  & 1.0             & -1.0 & -0.8 & 0.218         & 2.0 & 0.0                 & \textbf{0.145} & 2.0 \\
 W          &                     & 1.0             & -1.0 & -0.8 & 0.218         & 2.0 & 0.0                 & \textbf{0.166} & 2.0 \\
 $Z_{0}$ &                     & 1.0             & -1.0 & -0.8 & 1.1             & 1.5 & 0.065             & 0.06               & 0.6 \\
 N           &                     & \textbf{0.0} & 0.0  & 0.0  & \textbf{1.0} & 0.0 & \textbf{5.0}     & 0.0                 & \textbf{1.0} \\
@@ -112,7 +95,7 @@ N           &                     & \textbf{0.0} & 0.0  & 0.0  & \textbf{1.0} & 
 \end{centering}\end{figure}%
 
 % --------------------------------------------------------------------------
-\bibliographystyle{plainnat}
+\bibliographystyle{abbrv}
 \bibliography{robinbib}
 \end{document}
 %%
