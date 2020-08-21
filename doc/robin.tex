@@ -1,51 +1,59 @@
-\documentclass[12pt]{article}
-\usepackage[dvips]{graphicx}
-\usepackage{amsmath}
-\usepackage{array}
-\usepackage{natbib}
-\usepackage{latexsym}
+\documentclass{ahs}
+%\usepackage[dvips]{graphicx}
+%\usepackage{amsmath}
+%\usepackage{array}
+%\usepackage{latexsym}
+\usepackage{cite}
 \usepackage{hyperref}
 %\usepackage{fancyvrb}
 %\usepackage{dcolumn}
 % more text vertically
-\addtolength{\textheight}{0.5in}
-\addtolength{\topmargin}{-0.5in}
+%\addtolength{\textheight}{0.5in}
+%\addtolength{\topmargin}{-0.5in}
 % more text horizontally
-\setlength{\oddsidemargin}{0.25in}
-\setlength{\evensidemargin}{0.25in}
-\addtolength{\textwidth}{0.5in}
+%\setlength{\oddsidemargin}{0.25in}
+%\setlength{\evensidemargin}{0.25in}
+%\addtolength{\textwidth}{0.5in}
 % more closely-positioned figures
-\renewcommand{\topfraction}{0.75}
-\renewcommand{\bottomfraction}{0.5}
-\renewcommand{\textfraction}{0.25}
-\renewcommand{\floatpagefraction}{0.75}
+%\renewcommand{\topfraction}{0.75}
+%\renewcommand{\bottomfraction}{0.5}
+%\renewcommand{\textfraction}{0.25}
+%\renewcommand{\floatpagefraction}{0.75}
  %
-\title{Robust and Corrected Coefficients for the ROBIN Body}
- %
-\author{Mark J.~Stock, Blake B.~Hillier, and Adrin~Gharakhani\\
-        Applied Scientific Research, Inc.
-        Irvine, CA\\
-        \texttt{markjstock@gmail.com}, \texttt{blakehillier@mac.com},\\
-        \texttt{adrin@applied-scientific.com}
-}
-\begin{document}
-\maketitle
-%\begin{abstract}
-%\end{abstract}
+\jname{Journal of the American Helicopter Society}
+\logno{xxxx}
 
+\begin{document}
+
+\title{Robust and Corrected Coefficients for the ROBIN Body}
+
+\author{Blake B.~Hillier\thanks{blakehillier@mac.com}}
+\affiliation{Intern,\\ Applied Scientific Research,\\ Irvine, CA}
+\author{Mark J.~Stock\thanks{markjstock@gmail.com}}
+\affiliation{Developer,\\ Applied Scientific Research,\\ Irvine, CA}
+\author{Adrin~Gharakhani\thanks{adrin@applied-scientific.com}}
+\affiliation{President,\\ Applied Scientific Research,\\ Irvine, CA}
+
+\maketitle
 % --------------------------------------------------------------------------
 
-\abstract{
-The ROBIN body is a VTOL fuselage shape \cite{nasa87762,mineckgorton,nasa80051,nasa1999}
+\begin{abstract}
+The ROBIN body is a VTOL fuselage shape~\citen{nasa87762,mineckgorton,nasa80051,nasa1999}
 which is defined by the intersection of multiple sets of analytic equations.
 While the shape is used frequently in rotorcraft aerodynamics research, the coefficients,
 where published, do not reliably produce the desired geometry.
 This letter serves as a notice of the correct coefficients and a public repository
-for their distribution \cite{robinsurfmesh}.
-}
+for their distribution~\citen{robinsurfmesh}.
+\end{abstract}
 
+\begin{nomenclature}[$C_{p}$]
+\nomenentry{$(x, F(x))$}{\quad \quad \quad Cartesian coordinates}
+\nomenentry{$C_{i}$}{\quad \quad \quad The $i$-th Coefficient}
+\nomenentry{$N$}{\quad \quad \quad Elliptical Power}
+\nomenentry{$Z_{0}$}{\quad \quad \quad Camber Line}
+\end{nomenclature}
 % --------------------------------------------------------------------------
-\section*{Proposed changes}
+\section{Proposed changes}
  In its most common form, the superellipse function used to define the ROBIN body is:
 \begin{equation}
   F(x) = C_{6}+C_{7}\left[C_{1}+C_{2}\left(\frac{x+C_{3}}{C_{4}}\right)^{C_{5}}\right]^{\frac{1}{C_{8}}}
@@ -54,32 +62,9 @@ In order to facilitate correct computation of the shape, certain changes to the
 widely-published coefficients had to be made.
 Tables 1 and 2 tabulate these corrections.
 The changes fall into several categories, summarized below.
-\begin{itemize}
-\item Denominators $C_{4}$ in the front section of both the fuselage and pylon had the wrong sign
-and created incorrect results.
-\item The denominator in the outermost exponent ($C_{8}$) was changed from 0 to 1 due to $C_{8}$ throwing either a NaN or Inf when evaluated, even though those formulae do not need to evaluate the contents of the base since $C_{7}$ is also zero. This was pointed out in \cite{nasa87762}.
-\item Similarly, $C_{4}$ was changed from 0 to 1 to prevent division by zero, even though
-$C_{2}=C_{5}=0$ meant that there was no need to evaluate the division.
-%This is a confusing sentence
-\item Rows with constant values placed the value in $C_{1}$, but were multiplied by $C_{7}=0$,
-these single values should more clearly be placed in the outermost constant $C_{6}$.
-\item Finally, some obvious typos ($Z_0$ in the second body segment and $N$ on the pylon aft)
-in the original \cite{nasa80051} were caught by later authors \cite{nasa87762,mineckgorton}, but no author caught both.
-\end{itemize}
-
-A final note is in order: components guiding the shape of the pylon ($C_{7}$) have differed
-between earlier and later works. We have chosen to use values from Mineck and Gorton (2000)
-\cite{mineckgorton} because the shape of the generated pylon more closely matches the photos
-and drawings from earlier papers \cite{nasa80051,nasa87762} than the original coefficients. Code using these new coefficients can be found at the following Github link: \url{https://github.com/Applied-Scientific-Research/robin-surface-mesh} \cite{robinsurfmesh}
-
-% --------------------------------------------------------------------------
-\bibliographystyle{abbrv}
-\bibliography{robinbib}
-%---------------------------------------------------------------------------
-
 \begin{table}[ht]
 \begin{centering}
-\begin{small}
+\tbl{Coefficients for the fuselage; changes are in \textbf{bold}}{
 \begin{tabular}{cccccccccc}
 Function & x & $C_{1}$ & $C_{2}$ & $C_{3}$ & $C_{4}$ & $C_{5}$ & $C_{6}$ & $C_{7}$ & $C_{8}$ \\
 \hline
@@ -102,16 +87,14 @@ H          & [1.9, 2.0]  & 1.0             & -1.0 & \textbf{-0.8} & \textbf{1.1}
 W          &                 & 1.0             & -1.0 &             -1.9 &             0.1 &             2.0 &             0.0   & 0.05           & 2.0 \\
 $Z_{0}$ &                 & \textbf{0.0} & 0.0  &             0.0  & \textbf{1.0} &             0.0 & \textbf{0.04} & 0.0             & \textbf{1.0} \\
 N           &                 & \textbf{0.0} & 0.0  &             0.0  & \textbf{1.0} &             0.0 & \textbf{2.0}   & 0.0             & \textbf{1.0} \\
-\end{tabular}
+\end{tabular}}
 %\vspace{0.1in}
-\caption{Coefficients for the fuselage; changes are in \textbf{bold}}
 \label{fuscoeff}
-\end{small}
 \end{centering}\end{table}%\
 
 \begin{table}[ht]
 \begin{centering}
-\begin{small}
+\tbl{Coefficients for the pylons; changes are in \textbf{bold}}{
 \begin{tabular}{cccccccccc}
 Function & x & $C_{1}$ & $C_{2}$ & $C_{3}$ & $C_{4}$ & $C_{5}$ & $C_{6}$ & $C_{7}$ & $C_{8}$ \\
 \hline
@@ -124,12 +107,35 @@ H          & [0.8, 1.018]  & 1.0             & -1.0 & -0.8 & 0.218         & 2.0
 W          &                     & 1.0             & -1.0 & -0.8 & 0.218         & 2.0 & 0.0                 & \textbf{0.166} & 2.0 \\
 $Z_{0}$ &                     & 1.0             & -1.0 & -0.8 & 1.1             & 1.5 & 0.065             & 0.06               & 0.6 \\
 N           &                     & \textbf{0.0} & 0.0  & 0.0  & \textbf{1.0} & 0.0 & \textbf{5.0}     & 0.0                 & \textbf{1.0} \\
-\end{tabular}
+\end{tabular}}
 %\vspace{0.1in}
-\caption{Coefficients for the pylons; changes are in \textbf{bold}}
 \label{pycoeff}
-\end{small}
 \end{centering}
 \end{table}
+
+\begin{itemize}
+\item Denominators $C_{4}$ in the front section of both the fuselage and pylon had the wrong sign
+and created incorrect results.
+\item The denominator in the outermost exponent ($C_{8}$) was changed from 0 to 1 due to $C_{8}$ throwing either a NaN or Inf when evaluated, even though those formulae do not need to evaluate the contents of the base since $C_{7}$ is also zero. This was pointed out i~\cite{nasa87762}.
+\item Similarly, $C_{4}$ was changed from 0 to 1 to prevent division by zero, even though
+$C_{2}=C_{5}=0$ meant that there was no need to evaluate the division.
+%This is a confusing sentence
+\item Rows with constant values placed the value in $C_{1}$, but were multiplied by $C_{7}=0$,
+these single values should more clearly be placed in the outermost constant $C_{6}$.
+\item Finally, some obvious typos ($Z_0$ in the second body segment and $N$ on the pylon aft)
+in the original~\citen{nasa80051} were caught by later authors~\citen{nasa87762,mineckgorton}, but no author caught both.
+\end{itemize}
+
+A final note is in order: components guiding the shape of the pylon ($C_{7}$) have differed
+between earlier and later works. We have chosen to use values from Mineck and Gorton (2000)~\citen{mineckgorton} because the shape of the generated 
+pylon more closely matches the photos and drawings from earlier papers~\citen{nasa80051,nasa87762} than the original coefficients. Code using these 
+new coefficients can be found at the following Github link: \url{https://github.com/Applied-Scientific-Research/robin-surface-mesh}~\citen{robinsurfmesh} 
+and is able to generate a triangle mesh with customizable inputs of the number of nodes accross the length of the fuselage and pylons, and the number of 
+nodes on the circumference of the fuselage and pylons.
+
+% --------------------------------------------------------------------------
+\bibliographystyle{abbrv}
+\bibliography{robinbib}
+%--------------------------------------------------------------------------- 
 
 \end{document}
