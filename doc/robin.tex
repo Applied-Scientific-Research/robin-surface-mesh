@@ -43,7 +43,7 @@ The ROBIN body is a VTOL fuselage shape~\citen{nasa87762,mineckgorton,nasa80051,
 which is defined by the intersection of multiple sets of analytic equations.
 While the shape is used frequently in rotorcraft aerodynamics research, the coefficients,
 where published, do not reliably produce the desired geometry.
-This letter serves as a notice of the correct coefficients and a public repository
+This report serves as a notice of the correct coefficients and a public repository
 for a program using those coefficients which generates the correct shape. \citen{robinsurfmesh}.
 \end{abstract}
 
@@ -74,6 +74,9 @@ $C_{2}=C_{5}=0$ meant that there was no need to evaluate the division.
 These single-valued parameters would be more clear if placed in the outermost constant $C_{6}$.
 \item Finally, some obvious typographic errors ($Z_0$ in the second body segment and $N$ on the pylon aft)
 in the original~\citen{nasa80051} were caught by later authors~\citen{nasa87762,mineckgorton}, but no author caught both.
+\item Components guiding the shape of the pylon ($C_{7}$) have differed
+between earlier and later works. We have chosen to use values from Mineck and Gorton (2000)~\citen{mineckgorton} because the shape of the generated 
+pylon more closely matches the photos and drawings from earlier papers~\citen{nasa80051,nasa87762} than the original coefficients.
 \end{itemize}
 \begin{table}[ht]
 \begin{centering}
@@ -82,24 +85,24 @@ in the original~\citen{nasa80051} were caught by later authors~\citen{nasa87762,
 Function & x & $C_{1}$ & $C_{2}$ & $C_{3}$ & $C_{4}$ & $C_{5}$ & $C_{6}$ & $C_{7}$ & $C_{8}$ \\
 \hline
 H          & [0.0, 0.4]  & 1.0 & -1.0 & -0.4 & \textbf{-0.4} & 1.8 & 0.0    & 0.25 & 1.8 \\
-W          &                 & 1.0 & -1.0 & -0.4 & \textbf{-0.4} & 2.0 & 0.0    & 0.25 & 2.0 \\
-$Z_{0}$ &                 & 1.0 & -1.0 & -0.4 & \textbf{-0.4} & 1.8 & -0.08 & 0.08 & 1.8 \\
-N           &                 & 2.0 & 3.0  & 0.0  &              0.4  & 1.0 & 0.0    & 1.0   & 1.0 \\
+W          &             & 1.0 & -1.0 & -0.4 & \textbf{-0.4} & 2.0 & 0.0    & 0.25 & 2.0 \\
+$Z_{0}$ &                & 1.0 & -1.0 & -0.4 & \textbf{-0.4} & 1.8 & -0.08 & 0.08 & 1.8 \\
+N           &            & 2.0 & 3.0  & 0.0  &              0.4  & 1.0 & 0.0    & 1.0   & 1.0 \\
 \hline
 H          & [0.4, 0.8]  & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{0.25} & 0.0 & \textbf{1.0} \\
-W          &                 & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{0.25} & 0.0 & \textbf{1.0} \\
-$Z_{0}$ &                 & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & 0.0               & 0.0 & \textbf{1.0} \\
-N           &                 & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{5.0}   & 0.0 & \textbf{1.0} \\
+W          &             & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{0.25} & 0.0 & \textbf{1.0} \\
+$Z_{0}$ &                & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & 0.0               & 0.0 & \textbf{1.0} \\
+N           &            & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{5.0}   & 0.0 & \textbf{1.0} \\
 \hline
-H          & [0.8, 1.9]  & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2             & 0.6 \\
-W.         &                 & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2             & 0.6 \\
-$Z_{0}$ &                 & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.04 & -0.04        & 0.6 \\
-N           &                 & 5.0 & -3.0 & -0.8 & 1.1 & 1.0 & 0.0   & \textbf{1.0} & \textbf{1.0} \\
+H          & [0.8, 1.9]  & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2 & 0.6 \\
+W.         &             & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2 & 0.6 \\
+$Z_{0}$ &                & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.04 & -0.04 & 0.6 \\
+N           &            & 5.0 & -3.0 & -0.8 & 1.1 & 1.0 & 0.0 & \textbf{1.0} & \textbf{1.0} \\
 \hline
-H          & [1.9, 2.0]  & 1.0             & -1.0 & \textbf{-0.8} & \textbf{1.1} & \textbf{1.5} & \textbf{0.05} & \textbf{0.2} & \textbf{0.6} \\
-W          &                 & 1.0             & -1.0 &             -1.9 &             0.1 &             2.0 &             0.0   & 0.05           & 2.0 \\
-$Z_{0}$ &                 & \textbf{0.0} & 0.0  &             0.0  & \textbf{1.0} &             0.0 & \textbf{0.04} & 0.0             & \textbf{1.0} \\
-N           &                 & \textbf{0.0} & 0.0  &             0.0  & \textbf{1.0} &             0.0 & \textbf{2.0}   & 0.0             & \textbf{1.0} \\
+H          & [1.9, 2.0]  & 1.0 & -1.0 & -1.9 & 0.1 & 2.0 & 0.0 & 0.05 & 2.0 \\
+W          &             & 1.0 & -1.0 & -1.9 & 0.1 & 2.0 & 0.0 & 0.05 & 2.0 \\
+$Z_{0}$ &                & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{0.04} & 0.0 & \textbf{1.0} \\
+N           &            & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{2.0} & 0.0 & \textbf{1.0} \\
 \end{tabular}}
 %\vspace{0.1in}
 \label{fuscoeff}
@@ -125,12 +128,12 @@ N           &                     & \textbf{0.0} & 0.0  & 0.0  & \textbf{1.0} & 
 \end{centering}
 \end{table}
 
-A final note is in order: components guiding the shape of the pylon ($C_{7}$) have differed
-between earlier and later works. We have chosen to use values from Mineck and Gorton (2000)~\citen{mineckgorton} because the shape of the generated 
-pylon more closely matches the photos and drawings from earlier papers~\citen{nasa80051,nasa87762} than the original coefficients. Code using these 
+Code using these 
 new coefficients can be found at the following Github link: \url{https://github.com/Applied-Scientific-Research/robin-surface-mesh}~\citen{robinsurfmesh} 
 and is able to generate a triangle mesh with customizable inputs of the number of nodes accross the length of the fuselage and pylons, and the number of 
 nodes on the circumference of the fuselage and pylons.
+
+The authors would like to thank the editors for pointing out corrections to the tabulated values.
 
 % --------------------------------------------------------------------------
 \bibliographystyle{abbrv}
