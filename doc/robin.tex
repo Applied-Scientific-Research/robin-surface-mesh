@@ -68,14 +68,14 @@ The changes fall into several categories, summarized below.
 and created incorrect results.
 \item The denominator in the outermost exponent ($C_{8}$) was changed from 0 to 1 due to $C_{8}$ throwing either a NaN or Inf when evaluated, even though those formulae do not need to evaluate the contents of the base since $C_{7}$ is also zero. This was pointed out by Phelps \& Berry \cite{nasa87762}.
 \item Similarly, $C_{4}$ was changed from 0 to 1 to prevent division by zero, even though
-$C_{2}=C_{5}=0$ meant that there was no need to evaluate the division.
+$C_{2}=C_{5}=0$ means that there is no need to evaluate the division.
 %This is a confusing sentence
-\item Parameters which evaluate constant values were originally defined with that constant value in $C_{1}$, but then were multiplied by $C_{7}=0$, resulting in $0$.
-These single-valued parameters would be more clear if placed in the outermost constant $C_{6}$.
-\item Finally, some obvious typographic errors ($Z_0$ in the second body segment and $N$ on the pylon aft)
+\item Parameters which evaluate constant values were originally defined with that constant value in $C_{1}$, but were then multiplied by $C_{7}=0$, resulting in $0$.
+These single-valued parameters are more clear if placed in the outermost constant $C_{6}$.
+\item Some obvious typographic errors ($Z_0$ in the second body segment and $N$ on the pylon aft)
 in the original~\citen{nasa80051} were caught by later authors~\citen{nasa87762,mineckgorton}, but no author caught both.
-\item Components guiding the shape of the pylon ($C_{7}$) have differed
-between earlier and later works. We have chosen to use values from Mineck and Gorton (2000)~\citen{mineckgorton} because the shape of the generated 
+\item Components guiding the shape of the pylon ($C_{7}$) differ between earlier and later works.
+We have chosen to use values from Mineck and Gorton (2000)~\citen{mineckgorton} because the shape of the generated 
 pylon more closely matches the photos and drawings from earlier papers~\citen{nasa80051,nasa87762} than the original coefficients.
 \end{itemize}
 \begin{table}[ht]
