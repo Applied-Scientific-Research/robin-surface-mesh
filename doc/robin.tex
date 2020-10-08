@@ -44,7 +44,7 @@ which is defined by the intersection of multiple sets of analytic equations.
 While the shape is used frequently in rotorcraft aerodynamics research, the coefficients,
 where published, do not reliably produce the desired geometry.
 This report serves as a notice of the correct coefficients and a public repository
-for a program using those coefficients which generates the correct shape. \citen{robinsurfmesh}.
+for a program using those coefficients which generates the correct shape \citen{robinsurfmesh}.
 \end{abstract}
 
 \begin{nomenclature}[$C_{p}$]
@@ -57,9 +57,16 @@ for a program using those coefficients which generates the correct shape. \citen
 \section{Proposed changes}
  In its most common form, the superellipse function used to define the ROBIN body is:
 \begin{equation}
+   y=rsin(\theta) \quad z=rcos(\theta)+Z0
+\end{equation} 
+where \begin{equation}
+  r=\left(\frac{(AB)^{N}}{\left(Asin(\theta)\right)^{N}+\left(Bcos(\theta)\right)^{N}}\right)^{\frac{1}{N}} \quad \theta\in[0,2\pi].
+\end{equation}
+$A,B,N$, and $Z0$ are all calculated from
+\begin{equation}
   F(x) = C_{6}+C_{7}\left[C_{1}+C_{2}\left(\frac{x+C_{3}}{C_{4}}\right)^{C_{5}}\right]^{\frac{1}{C_{8}}}
 \end{equation}
-In order to facilitate correct computation of the shape, certain changes to the
+with their appropriate parameters listed in Tables 1 and 2. In order to facilitate correct computation of the shape, certain changes to the
 widely-published coefficients had to be made.
 Tables 1 and 2 present the complete and corrected set of coefficients with changes in bold.
 The changes fall into several categories, summarized below.
