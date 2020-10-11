@@ -39,12 +39,12 @@
 % --------------------------------------------------------------------------
 
 \begin{abstract}
-The ROBIN body is a VTOL fuselage shape~\citen{nasa87762,mineckgorton,nasa80051,nasa1999}
+The ROBIN body is a VTOL fuselage shape~\cite{nasa87762,mineckgorton,nasa80051,nasa1999}
 which is defined by the intersection of multiple sets of analytic equations.
 While the shape is used frequently in rotorcraft aerodynamics research, the coefficients,
 where published, do not reliably produce the desired geometry.
 This report serves as a notice of the correct coefficients and a public repository
-for a program using those coefficients which generates the correct shape \citen{robinsurfmesh}.
+for a program using those coefficients which generates the correct shape \cite{robinsurfmesh}.
 \end{abstract}
 
 \begin{nomenclature}[$C_{p}$]
@@ -80,10 +80,10 @@ $C_{2}=C_{5}=0$ means that there is no need to evaluate the division.
 \item Parameters which evaluate constant values were originally defined with that constant value in $C_{1}$, but were then multiplied by $C_{7}=0$, resulting in $0$.
 These single-valued parameters are more clear if placed in the outermost constant $C_{6}$.
 \item Some obvious typographic errors ($Z_0$ in the second body segment and $N$ on the pylon aft)
-in the original~\citen{nasa80051} were caught by later authors~\citen{nasa87762,mineckgorton}, but no author caught both.
+in the original \cite{nasa80051} were caught by later authors \cite{nasa87762,mineckgorton}, but no author caught both.
 \item Components guiding the shape of the pylon ($C_{7}$) differ between earlier and later works.
-We have chosen to use values from Mineck and Gorton (2000)~\citen{mineckgorton} because the shape of the generated 
-pylon more closely matches the photos and drawings from earlier papers~\citen{nasa80051,nasa87762} than the original coefficients.
+We have chosen to use values from Mineck and Gorton (2000) \cite{mineckgorton} because the shape of the generated 
+pylon more closely matches the photos and drawings from earlier papers \cite{nasa80051,nasa87762} than the original coefficients.
 \end{itemize}
 \begin{table}[ht]
 \begin{centering}
@@ -136,7 +136,7 @@ N           &                     & \textbf{0.0} & 0.0  & 0.0  & \textbf{1.0} & 
 \end{table}
 
 Code using these 
-new coefficients can be found at the following Github link: \url{https://github.com/Applied-Scientific-Research/robin-surface-mesh}~\citen{robinsurfmesh} 
+new coefficients can be found at the following Github link: \url{https://github.com/Applied-Scientific-Research/robin-surface-mesh} \cite{robinsurfmesh}
 and is able to generate a triangle mesh with customizable inputs of the number of nodes accross the length of the fuselage and pylon, and the number of 
 nodes on the circumference of the fuselage and pylon.
 
