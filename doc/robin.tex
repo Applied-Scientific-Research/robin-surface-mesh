@@ -43,7 +43,7 @@ The ROBIN body is a VTOL fuselage shape~\cite{nasa87762,mineckgorton,nasa80051,n
 which is defined by the intersection of multiple sets of analytic equations.
 While the shape is used frequently in rotorcraft aerodynamics research, the coefficients,
 where published, do not reliably produce the desired geometry.
-This report serves as a notice of the correct coefficients and a public repository
+This technical note serves as a notice of the correct coefficients. It also provides a link to a public repository
 for a program using those coefficients which generates the correct shape \cite{robinsurfmesh}.
 \end{abstract}
 
@@ -57,33 +57,33 @@ for a program using those coefficients which generates the correct shape \cite{r
 \section{Proposed changes}
  In its most common form, the superellipse function used to define the ROBIN body is:
 \begin{equation}
-   y=rsin(\theta) \quad z=rcos(\theta)+Z0
+   y=r\sin(\theta) \quad z=r\cos(\theta)+Z0
 \end{equation} 
 where \begin{equation}
-  r=\left(\frac{(AB)^{N}}{\left(Asin(\theta)\right)^{N}+\left(Bcos(\theta)\right)^{N}}\right)^{\frac{1}{N}} \quad \theta\in[0,2\pi].
+  r=\left(\frac{(\frac{HW}{4})^{N}}{\left(\frac{H}{2}\sin(\theta)\right)^{N}+\left(\frac{W}{2}\cos(\theta)\right)^{N}}\right)^{\frac{1}{N}} \quad \theta\in[0,2\pi].
 \end{equation}
-$A,B,N$, and $Z0$ are all calculated from
+$H, \ W, \ N$, and $Z0$ are all calculated from
 \begin{equation}
   F(x) = C_{6}+C_{7}\left[C_{1}+C_{2}\left(\frac{x+C_{3}}{C_{4}}\right)^{C_{5}}\right]^{\frac{1}{C_{8}}}
 \end{equation}
-with their appropriate parameters listed in Tables 1 and 2. In order to facilitate correct computation of the shape, certain changes to the
+with their appropriate parameters listed in Tables 1 and 2. The current coefficients result in incorrect values for $F(x)$ which prevent obtaining the correct values for $r, \ y,$ and $z$. In order to facilitate correct computation of the shape, certain changes to the
 widely-published coefficients had to be made.
 Tables 1 and 2 present the complete and corrected set of coefficients with changes in bold.
 The changes fall into several categories, summarized below.
 \begin{itemize}
 \item Denominators $C_{4}$ in the front section of both the fuselage and pylon had the wrong sign
 and created incorrect results.
-\item The denominator in the outermost exponent ($C_{8}$) was changed from 0 to 1 due to $C_{8}$ throwing either a NaN or Inf when evaluated, even though those formulae do not need to evaluate the contents of the base since $C_{7}$ is also zero. This was pointed out by Phelps \& Berry \cite{nasa87762}.
-\item Similarly, $C_{4}$ was changed from 0 to 1 to prevent division by zero, even though
-$C_{2}=C_{5}=0$ means that there is no need to evaluate the division.
-%This is a confusing sentence
-\item Parameters which evaluate constant values were originally defined with that constant value in $C_{1}$, but were then multiplied by $C_{7}=0$, resulting in $0$.
+\item The denominator in the outermost exponent ($C_{8}$) was changed from 0 to 1 due to $C_{8}$ throwing either a NaN or Inf when evaluated. This 
+change was made because $C_{7}=0$ and thus, the exponential term need not be evaluated. This was pointed out by Phelps \& Berry \cite{nasa87762}.
+\item Similarly, $C_{4}$ was changed from 0 to 1 to prevent division by zero, because
+$C_{2}=C_{5}=0$ means that there is no need to evaluate the term in the parenthesis.
+\item Parameters in $C_{1}$ where often multiplied by 0 in $C_{7}$ when they were supposed to be the resulting values. These were moved to $C_{6}$.
 These single-valued parameters are more clear if placed in the outermost constant $C_{6}$.
 \item Some obvious typographic errors ($Z_0$ in the second body segment and $N$ on the pylon aft)
 in the original \cite{nasa80051} were caught by later authors \cite{nasa87762,mineckgorton}, but no author caught both.
 \item Components guiding the shape of the pylon ($C_{7}$) differ between earlier and later works.
 We have chosen to use values from Mineck and Gorton (2000) \cite{mineckgorton} because the shape of the generated 
-pylon more closely matches the photos and drawings from earlier papers \cite{nasa80051,nasa87762} than the original coefficients.
+pylon matches the photos and drawings from earlier papers more closely \cite{nasa80051,nasa87762} than the original coefficients.
 \end{itemize}
 \begin{table}[ht]
 \begin{centering}
@@ -102,7 +102,7 @@ $Z_{0}$ &                & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & 0.0  
 N           &            & \textbf{0.0} & 0.0 & 0.0 & \textbf{1.0} & 0.0 & \textbf{5.0}   & 0.0 & \textbf{1.0} \\
 \hline
 H          & [0.8, 1.9]  & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2 & 0.6 \\
-W.         &             & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2 & 0.6 \\
+W          &             & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.05 & 0.2 & 0.6 \\
 $Z_{0}$ &                & 1.0 & -1.0 & -0.8 & 1.1 & 1.5 & 0.04 & -0.04 & 0.6 \\
 N           &            & 5.0 & -3.0 & -0.8 & 1.1 & 1.0 & 0.0 & \textbf{1.0} & \textbf{1.0} \\
 \hline
@@ -135,12 +135,9 @@ N           &                     & \textbf{0.0} & 0.0  & 0.0  & \textbf{1.0} & 
 \end{centering}
 \end{table}
 
-Code using these 
-new coefficients can be found at the following Github link: \url{https://github.com/Applied-Scientific-Research/robin-surface-mesh} \cite{robinsurfmesh}
-and is able to generate a triangle mesh with customizable inputs of the number of nodes accross the length of the fuselage and pylon, and the number of 
-nodes on the circumference of the fuselage and pylon.
-
-The authors would like to thank the editors for pointing out corrections to the tabulated values.
+Code using these new coefficients can be found at the following Github link: \url{https://github.com/Applied-Scientific-Research/robin-surface-mesh} 
+\cite{robinsurfmesh} and is able to generate a triangular mesh with customizable inputs of the number of nodes across the length of the fuselage and pylon, 
+and the number of nodes on the circumference of the fuselage and pylon.
 
 % --------------------------------------------------------------------------
 \bibliographystyle{abbrv}
