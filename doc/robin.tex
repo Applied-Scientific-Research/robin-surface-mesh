@@ -43,7 +43,10 @@ The ROBIN body is a VTOL fuselage shape~\cite{nasa87762,mineckgorton,nasa80051,n
 which is defined by the intersection of multiple sets of analytic equations.
 While the shape is used frequently in rotorcraft aerodynamics research, the coefficients,
 where published, do not reliably produce the desired geometry.
-This technical note serves as a notice of the correct coefficients. It also provides a link to a public repository
+While subsequent authors have presented corrections~\cite{nasa87762,mineckgorton},
+none have reported all that are required to generate the correct shape.
+This technical note serves as a notice of correct and clarified coefficients suitable for automatic
+calculation. It also provides a link to a public repository
 for a program using those coefficients which generates the correct shape \cite{robinsurfmesh}.
 \end{abstract}
 
@@ -73,12 +76,13 @@ The changes fall into several categories, summarized below.
 \begin{itemize}
 \item Denominators $C_{4}$ in the front section of both the fuselage and pylon had the wrong sign
 and created incorrect results.
-\item The denominator in the outermost exponent ($C_{8}$) was changed from 0 to 1 due to $C_{8}$ throwing either a NaN or Inf when evaluated. This 
-change was made because $C_{7}=0$ and thus, the exponential term need not be evaluated. This was pointed out by Phelps \& Berry \cite{nasa87762}.
+\item The denominator in the outermost exponent ($C_{8}$) was changed from 0 to 1 to prevent the evaluation from returning NaN or Inf.
+This change was made where $C_{7}=0$, i.e., situations where the exponential term does not contribute to the final value.
+This was pointed out by Phelps \& Berry \cite{nasa87762}.
 \item Similarly, $C_{4}$ was changed from 0 to 1 to prevent division by zero, because
-$C_{2}=C_{5}=0$ means that there is no need to evaluate the term in the parenthesis.
-\item Parameters in $C_{1}$ where often multiplied by 0 in $C_{7}$ when they were supposed to be the resulting values. These were moved to $C_{6}$.
-These single-valued parameters are more clear if placed in the outermost constant $C_{6}$.
+where $C_{2}=C_{5}=0$, there is no need to evaluate the term in the parenthesis.
+\item Parameters in $C_{1}$ were often multiplied by 0 in $C_{7}$ where they were intended as the resulting values.
+These single-valued parameters are more clear when they appear as the outermost constant $C_{6}$.
 \item Some obvious typographic errors ($Z_0$ in the second body segment and $N$ on the pylon aft)
 in the original \cite{nasa80051} were caught by later authors \cite{nasa87762,mineckgorton}, but no author caught both.
 \item Components guiding the shape of the pylon ($C_{7}$) differ between earlier and later works.
