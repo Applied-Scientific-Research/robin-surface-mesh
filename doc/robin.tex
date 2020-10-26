@@ -1,5 +1,6 @@
 \documentclass{ahs}
 %\usepackage[dvips]{graphicx}
+\usepackage{graphicx}
 %\usepackage{amsmath}
 %\usepackage{array}
 %\usepackage{latexsym}
@@ -76,6 +77,14 @@ The changes fall into several categories, summarized below.
 \begin{itemize}
 \item Denominators $C_{4}$ in the front section of both the fuselage and pylon had the wrong sign
 and created incorrect results.
+Fig.~\ref{badc4} shows both original and updated shapes.
+\begin{figure} \begin{centering}
+\includegraphics[width=3.0in]{img_badc4.png}
+\includegraphics[width=3.0in]{img_good.png}
+%\vspace{0.1in}
+\caption{Shape using original formula and all-positive $C_4$, shape using corrected $C_4$.}
+\label{badc4}
+\end{centering}\end{figure}%
 \item The denominator in the outermost exponent ($C_{8}$) was changed from 0 to 1 to prevent the evaluation from returning NaN or Inf.
 This change was made where $C_{7}=0$, i.e., situations where the exponential term does not contribute to the final value.
 This was pointed out by Phelps \& Berry \cite{nasa87762}.
@@ -88,6 +97,14 @@ in the original \cite{nasa80051} were caught by later authors \cite{nasa87762,mi
 \item Components guiding the shape of the pylon ($C_{7}$) differ between earlier and later works.
 We have chosen to use values from Mineck and Gorton (2000) \cite{mineckgorton} because the shape of the generated 
 pylon matches the photos and drawings from earlier papers more closely \cite{nasa80051,nasa87762} than the original coefficients.
+Fig.~\ref{badpylon} shows both original and updated pylon shapes.
+\begin{figure} \begin{centering}
+\includegraphics[width=3.0in]{img_badpylon.png}
+\includegraphics[width=3.0in]{img_good.png}
+%\vspace{0.1in}
+\caption{Original pylon, $C_{7,H} = 0.2$, $C_{7,W} = 0.172$, pylon from Mineck and Gorton (2000) \cite{mineckgorton}, $C_{7,H} = 0.145$, $C_{7,W} = 0.166$.}
+\label{badpylon}
+\end{centering}\end{figure}%
 \end{itemize}
 \begin{table}[ht]
 \begin{centering}
