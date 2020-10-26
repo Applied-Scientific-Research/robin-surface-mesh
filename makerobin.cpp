@@ -52,8 +52,7 @@ double chebeshev_node(double a, double b, double k, double n) {
   } else if (k==n) {
     return b;
   } else {
-    const double pi = 3.14159265358979;
-    return (a+b)*0.5+(b-a)*0.5*std::cos((2*(n-k)-1)*pi*0.5/n);
+    return (a+b)*0.5 + (b-a)*0.5*std::cos((2.0*(n-k))*M_PI*0.5/n);
   }
 }
 
@@ -91,11 +90,12 @@ void create_vertices(const size_t nx, const size_t nt, const std::string fileNam
   file.open(fileName);
   file << "# Vertices\n";
 
-  std::cout << std::endl << "Generating Nodes" << std::endl << std::endl;
+  std::cout << "  generating nodes" << std::endl;
   const double pi = 3.14159265358979;
   for (size_t ix=0; ix<nx+1; ix++) {
     
     const double xol = chebeshev_node(xBegin, xEnd, ix, nx);
+    //std::cout << ix << " " << xol << std::endl;
     const int sec = getSection(xol);
     if (sec == -1) {
       std::cout << "ERROR: sec == " << sec << " x == " << xol << std::endl;
@@ -115,7 +115,7 @@ void create_vertices(const size_t nx, const size_t nt, const std::string fileNam
       // compute yol, zol from r, theta, Z0
       const double yol = r * std::sin(theta);
       const double zol = r * std::cos(theta) + Z0;
-      std::cout << xol << " " << yol << " " << zol << std::endl;
+      //std::cout << xol << " " << yol << " " << zol << std::endl;
       
       // Write vertex to file
       file << "v " << xol << " " << yol << " " << zol << "\n";
@@ -128,6 +128,8 @@ void create_vertices(const size_t nx, const size_t nt, const std::string fileNam
 void create_faces(const std::string fileName, const size_t nx, const size_t nt) {
   std::ofstream file;
   file.open(fileName, std::ios_base::app);
+  std::cout << "  generating faces" << std::endl;
+
   // Label faces
   file << "\n# Faces\n";
   for (size_t i=2; i<nt+1; i++) {
@@ -237,10 +239,10 @@ int main(int argc, char const *argv[]) {
   const double pylBegin = 0.4;
   const double pylEnd = 1.018;
 
-  std::cout << "Createing Fuselage Mesh" << std::endl;
+  std::cout << "Creating fuselage mesh..." << std::endl;
   create_vertices(fnx, fnt, fileName, get_fuselage_section, fusBegin, fusEnd);
   create_faces(fileName, fnx, fnt);
-  std::cout << "Createing Pylon Mesh" << std::endl;
+  std::cout << "Creating pylon mesh..." << std::endl;
   create_vertices(pnx, pnt, pFileName, get_pylon_section, pylBegin, pylEnd);
   create_faces(pFileName, pnx, pnt);
   // CSG these two meshes together 
