@@ -7,10 +7,5 @@ all:
 	lualatex $(ROOT)
 	#lualatex $(ROOT)
 
-abstract:
-	latex abstract
-	dvips -o abstract.ps abstract
-	ps2pdf abstract.ps abstract.pdf
-
 clean:
 	(rm -rf *.ps *.log *.dvi *.aux *.*% *.lof *.lop *.lot *.toc *.idx *.ilg *.ind *.bbl *blg)
