@@ -1,15 +1,17 @@
 # robin-surface-mesh
 A program to generate a mesh of the ROBIN body - a generic helicopter body shape
 
+![screenshot](doc/img_good.png?raw=true "ROBIN Body")
+
 ### Usage
 Here is how you can build and run the program on Linux (or OSX with `g++` installed with Homebrew):
 
     git clone https://github.com/Applied-Scientific-Research/robin-surface-mesh.git
     cd robin-surface-mesh
     make
-    ./makerobin 100 40 60 24
+    ./makerobin 24 16 12 12
 
-The order of command-line arguments is:
+The final command can be used to make the geometry that appears in the image above. The order of command-line arguments is:
 
     ./makerobin [nx fuselage] [nt fuselage] [nx pylon] [nt pylon]
 
