@@ -31,9 +31,9 @@
 
 \title{Robust and Corrected Coefficients for the ROBIN Body}
 
-\author{Blake B.~Hillier \footnote{Engineering Intern}}
-\author{Mark J.~Stock \footnote{Research Scientist}}
-\author{Adrin Gharakhani \footnote{President, AIAA Member}}
+\author{Blake B.~Hillier\footnote{Engineering Intern}}
+\author{Mark J.~Stock\footnote{Research Scientist}}
+\author{Adrin Gharakhani\footnote{President, AIAA Member}}
 \affil{Applied Scientific Research, Inc.\\ Irvine, CA}
 
 \begin{document}
@@ -55,33 +55,42 @@ $Z_{0}$ &    camber line \\
 % --------------------------------------------------------------------------
 
 \section{Introduction}
-The ROBIN body is a VTOL fuselage shape \cite{nasa87762,mineckgorton,nasa80051,nasa1999}
-which is defined by the intersection of multiple sets of analytic equations.
-While the shape is used frequently in rotorcraft aerodynamics research, the coefficients,
-where published, do not reliably produce the desired geometry.
+The ROBIN (ROtor-Body-INteraction) body is a VTOL fuselage shape \cite{nasa87762,mineckgorton,nasa80051,nasa1999}
+defined by the intersection of multiple sets of analytic equations.
+This shape is used frequently in rotorcraft aerodynamics research, but the formulae and
+coefficients, where published, do not reliably produce the desired geometry.
 While subsequent authors have presented corrections \cite{nasa87762,mineckgorton},
 none have reported all that are required to generate the correct shape.
-This technical note serves as a notice of correct and clarified coefficients suitable for automatic
-calculation. It also provides a link to a public repository
+This technical note serves as a notice of correct and clarified formulae and coefficients
+suitable for automatic calculation. It also provides a link to a public repository
 for a program using those coefficients which generates the correct shape \cite{robinsurfmesh}.
 
 % --------------------------------------------------------------------------
 
 \section{Proposed changes}
-In its most common form, the superellipse function used to define the ROBIN body is:
+In proper form, the superellipse function used to define the ROBIN body is:
 \begin{equation}
-   y=r\sin(\theta) \quad z=r\cos(\theta)+Z0
+   y=r \sin \theta \quad z=r \cos \theta +Z0
 \end{equation} 
-where \begin{equation}
-  r=\left(\frac{\left(\frac{HW}{4}\right)^{N}}{\left(\frac{H}{2}\sin(\theta)\right)^{N}+\left(\frac{W}{2}\cos(\theta)\right)^{N}}\right)^{\frac{1}{N}} \quad \theta\in[0,2\pi].
+where
+\begin{equation}
+  %r=\left(\frac{\left(\frac{HW}{4}\right)^{N}}{\left(\frac{H}{2}\sin(\theta)\right)^{N}+\left(\frac{W}{2}\cos(\theta)\right)^{N}}\right)^{\frac{1}{N}} \quad \theta\in[0,2\pi].
+  r=\left(\frac{\left(\frac{HW}{4}\right)^{N}}{|\frac{H}{2}\sin \theta|^{N}+|\frac{W}{2}\cos \theta|^{N}}\right)^{\frac{1}{N}} \quad \theta\in[0,2\pi].
+\label{supell}
 \end{equation}
 $H, \ W, \ N$, and $Z0$ are all calculated from
 \begin{equation}
   F\left(x\right) = C_{6}+C_{7}\left[C_{1}+C_{2}\left(\frac{x+C_{3}}{C_{4}}\right)^{C_{5}}\right]^{\frac{1}{C_{8}}}
 \end{equation}
-with their appropriate parameters listed in Tables 1 and 2. The current coefficients result in incorrect values for $F\left(x\right)$ which prevent obtaining the correct values for $r, \ y,$ and $z$. In order to facilitate correct computation of the shape, certain changes to the
+with appropriate parameters $C_{1 \to 8}$.
+Orignal \cite{nasa80051} and subsequent \cite{nasa87762} papers confusingly point to two different equations
+for $N$ and $Z0$.
+In addition, all reported versions of Eq.~(\ref{supell}) omit the absolute value modifiers on sine and cosine,
+required to prevent floating point errors when raising to a non-whole power.
+
+The original coefficients result in incorrect values for $F\left(x\right)$ which prevent obtaining the correct values for $r, \ y,$ and $z$. In order to facilitate computation of the correct shape, certain changes to the
 widely-published coefficients had to be made.
-Tables 1 and 2 present the complete and corrected set of coefficients with changes in bold.
+Tables \ref{fuscoeff} and \ref{pycoeff} present the complete and corrected set of coefficients with changes in bold.
 The changes fall into several categories, summarized below.
 \begin{itemize}
 \item Denominators $C_{4}$ in the front section of both the fuselage and pylon had the wrong sign
