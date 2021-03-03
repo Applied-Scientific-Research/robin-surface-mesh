@@ -1,5 +1,5 @@
 /*
- * makerobin.cpp - generate the ROBIN helicopter body model
+ * PhelpsBerry1987.cpp - generate the ROBIN helicopter body model using 1987 coefficients and formulae
  *
  * Stores mesh in 2 .obj files:
  *   robin_fuselage
@@ -34,14 +34,14 @@ int get_pylon_section (const double x) {
 using SupEll = std::array<double, 8>;
 
 double getsuperval (const double x, const SupEll& c) {
-  return c[5] + c[6]*std::pow(std::max(0.0,c[0]+c[1]*std::pow((x+c[2])/c[3], c[4])), 1.0/c[7]);	// nan
+  // when c[7] (C8 in the paper) is zero, this will throw NaNs
+  return c[5] + c[6]*std::pow(c[0]+c[1]*std::pow((x+c[2])/c[3], c[4]), 1.0/c[7]);
 }
 
 double getRadialCoord(double H, double W, double theta, double N) {
   double numer = 0.25*H*W;
-  // Note the new std::abs - this is to ensure that values are positive, we really only compute one quadrant
-  double denom = std::pow(0.5*H*std::abs(std::sin(theta)), N) + std::pow(0.5*W*std::abs(std::cos(theta)), N);
-  if (!denom) { denom = 1;}
+  // Without std::abs() here, this line throws NaNs
+  double denom = std::pow(0.5*H*std::sin(theta), N) + std::pow(0.5*W*std::cos(theta), N);
   return numer / std::pow(denom, 1.0/N); 
 }
 
@@ -60,39 +60,34 @@ void create_vertices(const size_t nx, const size_t nt, const std::string fileNam
 
   // first 4 rows of each section are the fuselage
   // next 2 more rows each for the pylon
-  std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, -0.4, 1.8, 0.0, 0.25, 1.8},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.25, 0.0, 1.0},
+  // These are somewhat corrected coefficients from 1987
+  std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, 0.0, 0.25, 1.8},
+                                 {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
                                  {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
-                                 {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.145, 3.0},
-                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.145, 2.0} };
+                                 {1.0, -1.0, 0.8, 0.4, 3.0, 0.0, 0.2, 3.0},
+                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.2, 2.0} };
 
-  std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, -0.4, 2.0, 0.0, 0.25, 2.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.25, 0.0, 1.0},
+  std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, 0.4, 2.0, 0.0, 0.25, 2.0},
+                                 {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
                                  {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
-                                 {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.166, 3.0},
-                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.166, 2.0} };
+                                 {1.0, -1.0, -0.8, 0.4, 3.0, 0.0, 0.172, 3.0},
+                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.172, 2.0} };
 
-  std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, -0.4, 1.8, -0.08, 0.08, 1.8},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0},
+  std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, -0.08, 0.08, 1.8},
+                                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.04, 0.0, 1.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 0.125, 0.0, 1.0},
+                                 {0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0},
+                                 {0.122, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.065, 0.06, 0.6} };
 
   std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0},
+                                 {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0},
                                  {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 1.0, 1.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 2.0, 0.0, 1.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0},
-                                 {0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 0.0, 1.0} };
-
-  // fixes:
-  // 1) if there's a 0.0 in the second col, then change the 4th and 5th cols to 1.0
-  // 2) if there's a 0.0 in C7, change C8 to 1.0, same as above, to prevent nan/inf
-  // 3) the 0.4..0.8 section (row 2) coefficients in C1 needed to go into C6
-  // 4) C4 is wrong in the first section of fuse and pyl - it needed to be negative
+                                 {2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0},
+                                 {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0},
+                                 {0.122, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0} };
 
   // Open file to write to
   std::ofstream file;

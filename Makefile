@@ -2,9 +2,9 @@ CXX=g++
 CXXFLAGS=-O2 -std=c++17
 LIBS=-lm
 
-all : makerobin
+all : makerobin FreemanMineck1979 PhelpsBerry1987
 
-makerobin : makerobin.cpp
+% : %.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LIBS)
 
 clean : 
