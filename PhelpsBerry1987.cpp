@@ -116,9 +116,13 @@ void create_vertices(const size_t nx, const size_t nt, const std::string fileNam
       // compute r from H, W, N, theta
       const double r = getRadialCoord(H, W, theta, N);
       // compute yol, zol from r, theta, Z0
-      const double yol = r * std::sin(theta);
-      const double zol = r * std::cos(theta) + Z0;
+      double yol = r * std::sin(theta);
+      double zol = r * std::cos(theta) + Z0;
       //std::cout << xol << " " << yol << " " << zol << std::endl;
+
+      // change nans to 0.0 so something shows up
+      if (std::isnan(yol)) yol = 0.0;
+      if (std::isnan(zol)) zol = 0.0;
       
       // Write vertex to file
       file << "v " << xol << " " << yol << " " << zol << "\n";

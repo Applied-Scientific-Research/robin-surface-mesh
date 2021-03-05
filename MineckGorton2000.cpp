@@ -1,5 +1,5 @@
 /*
- * FreemanMineck1979.cpp - generate the ROBIN helicopter body model using original coefficients and formulae
+ * MineckGorton2000.cpp - generate the ROBIN helicopter body model using 2000 coefficients and formulae
  *
  * Stores mesh in 2 .obj files:
  *   robin_fuselage
@@ -60,26 +60,26 @@ void create_vertices(const size_t nx, const size_t nt, const std::string fileNam
 
   // first 4 rows of each section are the fuselage
   // next 2 more rows each for the pylon
-  // These are the original coefficients from 1979
+  // These are somewhat corrected coefficients from 1987
   std::vector<SupEll> hcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, 0.0, 0.25, 1.8},
                                  {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
                                  {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
-                                 {1.0, -1.0, -0.8, 0.4, 3.0, 0.0, 0.2, 3.0},
-                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.2, 2.0} };
+                                 {1.0, -1.0, -0.8, 0.4, 3.0, 0.0, 0.145, 3.0},
+                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.145, 2.0} };
 
   std::vector<SupEll> wcoeff = { {1.0, -1.0, -0.4, 0.4, 2.0, 0.0, 0.25, 2.0},
                                  {0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.05, 0.2, 0.6},
                                  {1.0, -1.0, -1.9, 0.1, 2.0, 0.0, 0.05, 2.0},
-                                 {1.0, -1.0, -0.8, -0.4, 3.0, 0.0, 0.172, 3.0},
-                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.172, 2.0} };
+                                 {1.0, -1.0, -0.8, 0.4, 3.0, 0.0, 0.166, 3.0},
+                                 {1.0, -1.0, -0.8, 0.218, 2.0, 0.0, 0.166, 2.0} };
 
   std::vector<SupEll> zcoeff = { {1.0, -1.0, -0.4, 0.4, 1.8, -0.08, 0.08, 1.8},
-                                 {8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.04, -0.04, 0.6},
                                  {0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-                                 {0.122, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                                 {0.125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
                                  {1.0, -1.0, -0.8, 1.1, 1.5, 0.065, 0.06, 0.6} };
 
   std::vector<SupEll> ncoeff = { {2.0, 3.0, 0.0, 0.4, 1.0, 0.0, 1.0, 1.0},
@@ -87,7 +87,7 @@ void create_vertices(const size_t nx, const size_t nt, const std::string fileNam
                                  {5.0, -3.0, -0.8, 1.1, 1.0, 0.0, 0.0, 0.0},
                                  {2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
                                  {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-                                 {0.122, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} };
+                                 {5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} };
 
   // Open file to write to
   std::ofstream file;
