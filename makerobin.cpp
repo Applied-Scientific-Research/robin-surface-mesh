@@ -51,7 +51,7 @@ double chebeshev_node(double a, double b, double k, double n) {
   } else if (k==n) {
     return b;
   } else {
-    return (a+b)*0.5 + (b-a)*0.5*std::cos((2.0*(n-k))*M_PI*0.5/n);
+    return (a+b)*0.5 + (b-a)*0.5*std::cos((2.0*(n-k)-1.0)*M_PI*0.5/n);
   }
 }
 
