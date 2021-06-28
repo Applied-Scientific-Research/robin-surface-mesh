@@ -1,5 +1,6 @@
 # type "make" command in Unix to create asme2e.pdf file 
-ROOT=robin
+#ROOT=robin
+ROOT=preprint
 
 all:
 	lualatex $(ROOT)
