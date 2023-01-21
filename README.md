@@ -3,6 +3,12 @@ A program to generate a mesh of the ROBIN body - a generic helicopter body shape
 
 ![screenshot](doc/img_good.png?raw=true "ROBIN Body")
 
+### Publication
+A full write-up was published as a Technical Note: [Robust and Corrected Coefficients for the
+ROtor-Body-INteraction Body, AIAA Journal, Vol. 59, No. 10, October 2021](https://arc.aiaa.org/doi/10.2514/1.J060303).
+
+Cibin Joseph created [genROBIN](https://github.com/cibinjoseph/genROBIN), a Python implementation that exports to more file formats than this version.
+
 ### Usage
 Here is how you can build and run the program on Linux (or OSX with `g++` installed with Homebrew):
 
